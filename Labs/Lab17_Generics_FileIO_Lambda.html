@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Generics, File I/O &amp; Lambda Expressions</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --tag-pink-bg: #FBEAF0;
+    --tag-pink-text: #72243E;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+    --accent-bg: #F0ECFE;
+    --accent-main: #534AB7;
+    --accent-txt: #3C3489;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--accent-main); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-txt); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-bg); color: var(--accent-txt); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .lab-box { background: var(--accent-bg); border-left: 4px solid var(--accent-main); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--accent-txt); line-height: 1.6; }
+  .lab-box strong { color: #26215C; }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--accent-main); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-generics { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-fileio { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-lambda { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-functional { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-stream { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-mixed { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-bg); border: 2px solid var(--accent-main); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-txt); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent-main); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Generics, File I/O &amp; Lambda Expressions</h1>
+    <div class="header-sub">
+      This exercise covers three advanced Java topics in a single project:
+      <strong>Generics</strong> (type-safe reusable classes and methods),
+      <strong>File I/O</strong> (reading from and writing to files),
+      and <strong>Lambda Expressions</strong> (concise functional-style code with functional interfaces).
+      Read each problem carefully before coding.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Intermediate</div></div>
+    <div class="info-item"><div class="label">Problems</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabSeventeen-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">Generics, File I/O, Lambda</div></div>
+  </div>
+
+  <div class="lab-box">
+    <strong>Lab instructions:</strong><br>
+    &bull; All 10 problems must compile and run without errors.<br>
+    &bull; No AI-generated code. Your instructor may ask you to explain any part of your code.<br>
+    &bull; You may refer to official Java documentation (<code>docs.oracle.com</code>).<br>
+    &bull; Each problem is independent — if you get stuck on one, move to the next.
+  </div>
+
+  <!-- QUICK REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead><tr><th>Topic</th><th>Key syntax</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Generic class</strong></td><td><code>class Box&lt;T&gt; { T value; }</code></td></tr>
+      <tr><td><strong>Generic method</strong></td><td><code>public &lt;T&gt; void print(T item) { }</code></td></tr>
+      <tr><td><strong>Bounded type</strong></td><td><code>&lt;T extends Number&gt;</code> — T must be a Number or subclass</td></tr>
+      <tr><td><strong>Wildcard</strong></td><td><code>List&lt;?&gt;</code> (unknown), <code>List&lt;? extends Number&gt;</code> (upper bound)</td></tr>
+      <tr><td><strong>Write to file</strong></td><td><code>FileWriter</code> / <code>BufferedWriter</code> / <code>PrintWriter</code></td></tr>
+      <tr><td><strong>Read from file</strong></td><td><code>FileReader</code> / <code>BufferedReader</code> / <code>Scanner</code></td></tr>
+      <tr><td><strong>Try-with-resources</strong></td><td><code>try (BufferedReader br = new BufferedReader(...)) { }</code></td></tr>
+      <tr><td><strong>Lambda</strong></td><td><code>(parameters) -&gt; expression</code> or <code>(parameters) -&gt; { statements; }</code></td></tr>
+      <tr><td><strong>Functional interface</strong></td><td>An interface with exactly one abstract method. Annotate with <code>@FunctionalInterface</code></td></tr>
+      <tr><td><strong>Built-in functional</strong></td><td><code>Predicate&lt;T&gt;</code>, <code>Function&lt;T,R&gt;</code>, <code>Consumer&lt;T&gt;</code>, <code>Supplier&lt;T&gt;</code> (in <code>java.util.function</code>)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>GenericsFileIOLambda</code>.</li>
+      <li>Inside the <code>src</code> folder, create <strong>three packages</strong>:
+        <br><code>com.school.generics</code>
+        <br><code>com.school.fileio</code>
+        <br><code>com.school.lambda</code>
+      </li>
+      <li>Place each problem's files in the correct package as indicated.</li>
+      <li>Each test class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">GenericsFileIOLambda/</span>
+└── <span class="folder">src/</span>
+    ├── <span class="pkg">com/school/generics/</span>
+    │   ├── <span class="file">Box.java</span>
+    │   ├── <span class="file">TestBox.java</span>
+    │   ├── <span class="file">Pair.java</span>
+    │   ├── <span class="file">TestPair.java</span>
+    │   ├── <span class="file">MathUtils.java</span>
+    │   └── <span class="file">TestMathUtils.java</span>
+    ├── <span class="pkg">com/school/fileio/</span>
+    │   ├── <span class="file">FileWriteDemo.java</span>
+    │   ├── <span class="file">FileReadDemo.java</span>
+    │   ├── <span class="file">StudentFileManager.java</span>
+    │   └── <span class="file">TestStudentFileManager.java</span>
+    └── <span class="pkg">com/school/lambda/</span>
+        ├── <span class="file">LambdaBasics.java</span>
+        ├── <span class="file">BuiltInFunctions.java</span>
+        ├── <span class="file">CustomFunctional.java</span>
+        ├── <span class="file">TestCustomFunctional.java</span>
+        └── <span class="file">StudentAnalyzer.java</span></div>
+
+  <!-- PROBLEMS -->
+  <div class="section-title">Part A — Generics (3 problems)</div>
+
+  <!-- Problem 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Generic class — Box</span>
+      <span class="tag tag-generics">Generics</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.generics</code></p>
+      <p>Create a generic class <code>Box&lt;T&gt;</code> with:</p>
+      <ul>
+        <li>A private field <code>T content;</code></li>
+        <li>A constructor that accepts <code>T content</code>.</li>
+        <li><code>public T getContent()</code></li>
+        <li><code>public void setContent(T content)</code></li>
+        <li><code>public boolean isEmpty()</code> — returns true if content is null</li>
+        <li><code>@Override public String toString()</code> — returns <code>"Box[" + content + "]"</code></li>
+      </ul>
+      <p>Create <code>TestBox</code>. Create boxes of different types and demonstrate type safety:</p>
+      <div class="expected-output">--- String Box ---
+Box[Hello World]
+Content: Hello World
+Empty: false
+
+--- Integer Box ---
+Box[42]
+Content: 42
+
+--- Double Box ---
+Box[3.14]
+Content: 3.14
+
+--- Empty Box ---
+Box[null]
+Empty: true</div>
+    </div>
+  </div>
+
+  <!-- Problem 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">Generic class with two types — Pair</span>
+      <span class="tag tag-generics">Generics</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.generics</code></p>
+      <p>Create a generic class <code>Pair&lt;K, V&gt;</code> with:</p>
+      <ul>
+        <li>Private fields: <code>K key;</code> and <code>V value;</code></li>
+        <li>A constructor that accepts both.</li>
+        <li>Getters and setters for both fields.</li>
+        <li><code>@Override public String toString()</code> — returns <code>"(" + key + ", " + value + ")"</code></li>
+      </ul>
+      <p>Create <code>TestPair</code>. Create pairs of different type combinations:</p>
+      <div class="expected-output">--- Student ID + Name ---
+(20240001, Alice Santos)
+
+--- Product + Price ---
+(Laptop, 45999.0)
+
+--- Coordinate ---
+(10, 20)
+
+--- Swapping values ---
+Before: (Hello, World)
+After swap: key=World, value=Hello</div>
+      <p><em>For the swap, create a method <code>public static &lt;A, B&gt; Pair&lt;B, A&gt; swap(Pair&lt;A, B&gt; pair)</code> that returns a new Pair with key and value swapped.</em></p>
+    </div>
+  </div>
+
+  <!-- Problem 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">Bounded generics — MathUtils</span>
+      <span class="tag tag-generics">Generics</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.generics</code></p>
+      <p>Create a class <code>MathUtils</code> with <strong>generic static methods</strong> that use <strong>bounded types</strong>:</p>
+      <ul>
+        <li><code>public static &lt;T extends Number&gt; double sum(T a, T b)</code> — returns the sum as double using <code>.doubleValue()</code></li>
+        <li><code>public static &lt;T extends Comparable&lt;T&gt;&gt; T findMax(T a, T b)</code> — returns the larger value using <code>.compareTo()</code></li>
+        <li><code>public static &lt;T extends Comparable&lt;T&gt;&gt; T findMin(T a, T b)</code></li>
+        <li><code>public static &lt;T extends Number&gt; double average(java.util.List&lt;T&gt; list)</code> — accepts a List of any Number subtype and returns the average</li>
+      </ul>
+      <p>Create <code>TestMathUtils</code>. Test with Integer, Double, and String (for comparisons):</p>
+      <div class="expected-output">--- Bounded Number methods ---
+sum(10, 20) = 30.0
+sum(3.14, 2.86) = 6.0
+
+--- Bounded Comparable methods ---
+findMax(10, 20) = 20
+findMax(3.14, 2.86) = 3.14
+findMax("Apple", "Banana") = Banana
+findMin("Apple", "Banana") = Apple
+
+--- Average of List ---
+Integer list [10, 20, 30, 40, 50] → average: 30.0
+Double list [3.5, 4.0, 2.5] → average: 3.33</div>
+    </div>
+  </div>
+
+  <div class="section-title">Part B — File I/O (3 problems)</div>
+
+  <!-- Problem 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">Writing to a file</span>
+      <span class="tag tag-fileio">File I/O</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.fileio</code></p>
+      <p>Create a class named <code>FileWriteDemo</code>.</p>
+      <p>Inside <code>main</code>, write the following to a file named <code>output.txt</code>:</p>
+      <ol>
+        <li>Use <code>PrintWriter</code> (wrapped in try-with-resources) to write 5 lines:</li>
+      </ol>
+      <pre class="expected-output">Name: Alice Santos
+Age: 25
+Course: BSIT
+GPA: 3.8
+Status: Active</pre>
+      <p>After writing, print a confirmation message to the console. Then <strong>append</strong> a new line to the same file using <code>FileWriter(filename, true)</code>:</p>
+      <pre class="expected-output">Date: 2025-01-15</pre>
+      <p>Print the final confirmation.</p>
+      <div class="expected-output">File "output.txt" created successfully.
+Line appended to "output.txt".
+Done.</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> <code>try-with-resources</code> automatically closes the file writer even if an exception occurs. The second parameter <code>true</code> in <code>FileWriter</code> enables <strong>append mode</strong> instead of overwriting.
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">Reading from a file</span>
+      <span class="tag tag-fileio">File I/O</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.fileio</code></p>
+      <p>Create a class named <code>FileReadDemo</code>.</p>
+      <p>Inside <code>main</code>, read the <code>output.txt</code> file created in Problem 04:</p>
+      <ol>
+        <li>Use <code>BufferedReader</code> (wrapped in try-with-resources) to read <strong>all lines</strong> and print them with line numbers.</li>
+        <li>Count the total number of lines and characters.</li>
+        <li>Handle <code>FileNotFoundException</code> if the file doesn't exist.</li>
+        <li>Handle <code>IOException</code> for other read errors.</li>
+      </ol>
+      <div class="expected-output">--- Reading output.txt ---
+Line 1: Name: Alice Santos
+Line 2: Age: 25
+Line 3: Course: BSIT
+Line 4: GPA: 3.8
+Line 5: Status: Active
+Line 6: Date: 2025-01-15
+
+Total lines: 6
+Total characters: 87</div>
+      <p><em>Add the necessary imports: <code>java.io.BufferedReader</code>, <code>java.io.FileReader</code>, <code>java.io.FileNotFoundException</code>, <code>java.io.IOException</code></em></p>
+    </div>
+  </div>
+
+  <!-- Problem 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Read, process, and write — StudentFileManager</span>
+      <span class="tag tag-fileio">File I/O</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.fileio</code></p>
+      <p>Create a class named <code>StudentFileManager</code> with the following static methods:</p>
+      <ul>
+        <li><code>public static void writeStudents(String filename, String[] names, double[] grades)</code> — writes each student as <code>name,grade</code> (CSV format), one per line.</li>
+        <li><code>public static void readAndDisplayStudents(String filename)</code> — reads the file, splits each line by <code>","</code>, prints formatted output, and computes the class average.</li>
+        <li><code>public static void writeReport(String filename, String reportContent)</code> — writes a summary report to a separate file.</li>
+      </ul>
+      <p>Create <code>TestStudentFileManager</code>. Write 5 students, read and display them, then write a summary report.</p>
+      <div class="expected-output">--- Writing students to students.csv ---
+Written 5 students to students.csv
+
+--- Reading students from students.csv ---
+1. Alice         88.5   Passed
+2. Bob           62.0   Failed
+3. Charlie       91.0   Passed
+4. Diana         74.5   Failed
+5. Edward        95.5   Passed
+
+Class average: 82.3
+Passed: 3 | Failed: 2
+
+--- Writing report to report.txt ---
+Report saved to report.txt</div>
+      <p><em>The report.txt content should contain the summary text.</em></p>
+    </div>
+  </div>
+
+  <div class="section-title">Part C — Lambda expressions (3 problems)</div>
+
+  <!-- Problem 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">Lambda basics — Replacing anonymous classes</span>
+      <span class="tag tag-lambda">Lambda</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.lambda</code></p>
+      <p>Create a class named <code>LambdaBasics</code>.</p>
+      <p>Inside <code>main</code>, demonstrate lambdas by using them with common operations:</p>
+      <ol>
+        <li><strong>Sort a list of Strings</strong> by length using <code>Collections.sort(list, (a, b) -&gt; ...)</code></li>
+        <li><strong>Sort a list of Integers</strong> in descending order using a lambda comparator.</li>
+        <li><strong>forEach</strong>: print each element of a list using <code>list.forEach(item -&gt; ...)</code></li>
+        <li><strong>removeIf</strong>: remove all strings shorter than 4 characters using <code>list.removeIf(s -&gt; ...)</code></li>
+        <li><strong>Runnable</strong>: create a Runnable using a lambda and run it.</li>
+      </ol>
+      <p>Add: <code>import java.util.*;</code></p>
+      <div class="expected-output">--- Sort by length ---
+Before: [Banana, Fig, Apple, Kiwi, Elderberry]
+After: [Fig, Kiwi, Apple, Banana, Elderberry]
+
+--- Sort descending ---
+Before: [5, 2, 8, 1, 9, 3]
+After: [9, 8, 5, 3, 2, 1]
+
+--- forEach ---
+- Mango
+- Apple
+- Cherry
+
+--- removeIf (length < 4) ---
+Before: [Hi, Hello, OK, World, Go]
+After: [Hello, World]
+
+--- Runnable lambda ---
+Running from a lambda!</div>
+    </div>
+  </div>
+
+  <!-- Problem 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Built-in functional interfaces</span>
+      <span class="tag tag-lambda">Lambda</span>
+      <span class="tag tag-functional">Functional</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.lambda</code></p>
+      <p>Create a class named <code>BuiltInFunctions</code>.</p>
+      <p>Inside <code>main</code>, demonstrate the four main built-in functional interfaces from <code>java.util.function</code>:</p>
+      <ol>
+        <li><strong>Predicate&lt;T&gt;</strong> — tests a condition, returns boolean:
+          <ul>
+            <li><code>Predicate&lt;Integer&gt; isEven = n -&gt; n % 2 == 0;</code></li>
+            <li><code>Predicate&lt;String&gt; isLong = s -&gt; s.length() &gt; 5;</code></li>
+            <li>Demonstrate <code>.test()</code>, <code>.and()</code>, <code>.or()</code>, <code>.negate()</code></li>
+          </ul>
+        </li>
+        <li><strong>Function&lt;T, R&gt;</strong> — transforms input to output:
+          <ul>
+            <li><code>Function&lt;String, Integer&gt; toLength = s -&gt; s.length();</code></li>
+            <li><code>Function&lt;Integer, String&gt; toLabel = n -&gt; "Score: " + n;</code></li>
+            <li>Demonstrate <code>.apply()</code> and <code>.andThen()</code></li>
+          </ul>
+        </li>
+        <li><strong>Consumer&lt;T&gt;</strong> — accepts input, returns nothing:
+          <ul>
+            <li><code>Consumer&lt;String&gt; shout = s -&gt; System.out.println(s.toUpperCase() + "!");</code></li>
+            <li>Demonstrate <code>.accept()</code> and <code>.andThen()</code></li>
+          </ul>
+        </li>
+        <li><strong>Supplier&lt;T&gt;</strong> — takes no input, returns a value:
+          <ul>
+            <li><code>Supplier&lt;Double&gt; randomScore = () -&gt; Math.round(Math.random() * 100.0) / 1.0;</code></li>
+            <li>Demonstrate <code>.get()</code> called multiple times.</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="expected-output">--- Predicate ---
+isEven.test(4): true
+isEven.test(7): false
+isEven.and(n > 10).test(12): true
+isEven.or(n > 10).test(11): true
+isEven.negate().test(7): true
+
+--- Function ---
+toLength.apply("Hello"): 5
+toLabel.apply(95): Score: 95
+toLength.andThen(toLabel).apply("Hello"): Score: 5
+
+--- Consumer ---
+shout.accept("hello"): HELLO!
+
+--- Supplier ---
+randomScore.get(): 73.0
+randomScore.get(): 45.0</div>
+      <p><em>Note: Supplier output will vary since it's random.</em></p>
+    </div>
+  </div>
+
+  <!-- Problem 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">Custom functional interface</span>
+      <span class="tag tag-lambda">Lambda</span>
+      <span class="tag tag-functional">Functional</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.lambda</code></p>
+      <p>Create your own functional interfaces and use them with lambdas.</p>
+      <p>Create <code>CustomFunctional.java</code> containing <strong>three</strong> functional interfaces (they can be in the same file as separate top-level or nested interfaces, or in separate files):</p>
+      <ul>
+        <li><code>@FunctionalInterface interface StringProcessor { String process(String input); }</code></li>
+        <li><code>@FunctionalInterface interface MathOperation { double operate(double a, double b); }</code></li>
+        <li><code>@FunctionalInterface interface Validator&lt;T&gt; { boolean validate(T input); }</code></li>
+      </ul>
+      <p>Create <code>TestCustomFunctional</code>. Define lambda implementations for each:</p>
+      <ul>
+        <li>StringProcessor: <code>toUpper</code>, <code>reverse</code>, <code>addExclamation</code></li>
+        <li>MathOperation: <code>add</code>, <code>subtract</code>, <code>multiply</code>, <code>power</code></li>
+        <li>Validator: <code>isPositive</code> (Integer), <code>isValidEmail</code> (String)</li>
+      </ul>
+      <p>Also write a method: <code>public static String applyProcessor(String input, StringProcessor processor)</code> — accepts a string and a lambda.</p>
+      <div class="expected-output">--- StringProcessor ---
+toUpper: HELLO WORLD
+reverse: dlroW olleH
+addExclamation: Hello World!
+applyProcessor: ***Hello World***
+
+--- MathOperation ---
+add(10, 5): 15.0
+subtract(10, 5): 5.0
+multiply(10, 5): 50.0
+power(2, 8): 256.0
+
+--- Generic Validator ---
+isPositive(10): true
+isPositive(-5): false
+isValidEmail("alice@email.com"): true
+isValidEmail("not-an-email"): false</div>
+    </div>
+  </div>
+
+  <div class="section-title">Part D — Combined (1 problem)</div>
+
+  <!-- Problem 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — Student analyzer</span>
+      <span class="tag tag-generics">Generics</span>
+      <span class="tag tag-fileio">File I/O</span>
+      <span class="tag tag-lambda">Lambda</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.lambda</code></p>
+      <p>Create a class named <code>StudentAnalyzer</code> that combines all three topics into one program.</p>
+      <p><strong>Step 1 — Generic Pair class:</strong> Reuse or create a generic <code>Pair&lt;K, V&gt;</code> class to store student name (String) and grade (Double).</p>
+      <p><strong>Step 2 — Read from file:</strong> Create a file called <code>students_data.csv</code> with this content (write it from code first):</p>
+      <pre class="expected-output">Alice,88.5
+Bob,62.0
+Charlie,91.0
+Diana,74.5
+Edward,95.5
+Fiona,55.0
+George,82.0
+Hannah,98.0</pre>
+      <p>Read the file and parse each line into <code>Pair&lt;String, Double&gt;</code> objects. Store them in an <code>ArrayList</code>.</p>
+      <p><strong>Step 3 — Process with lambdas:</strong></p>
+      <ul>
+        <li>Use a <code>Predicate&lt;Pair&lt;String, Double&gt;&gt;</code> to filter students who passed (&ge; 75).</li>
+        <li>Use a <code>Predicate</code> to filter students who failed (&lt; 75).</li>
+        <li>Use a <code>Function&lt;Pair&lt;String, Double&gt;, String&gt;</code> to format each pair into a report line.</li>
+        <li>Use a <code>Consumer&lt;Pair&lt;String, Double&gt;&gt;</code> to print each student.</li>
+        <li>Sort the list by grade descending using a lambda comparator.</li>
+      </ul>
+      <p><strong>Step 4 — Write report to file:</strong> Write the full analysis to <code>analysis_report.txt</code>.</p>
+      <div class="expected-output">--- Reading students_data.csv ---
+Loaded 8 students.
+
+--- All students (sorted by grade, descending) ---
+1. Hannah        98.0   ★ Passed
+2. Edward        95.5   ★ Passed
+3. Charlie       91.0   ★ Passed
+4. Alice         88.5   ★ Passed
+5. George        82.0   ★ Passed
+6. Diana         74.5   ✗ Failed
+7. Bob           62.0   ✗ Failed
+8. Fiona         55.0   ✗ Failed
+
+--- Summary ---
+Total students: 8
+Passed: 5
+Failed: 3
+Highest: Hannah (98.0)
+Lowest: Fiona (55.0)
+Average: 80.69
+
+Report written to analysis_report.txt</div>
+      <div class="note-box">
+        <strong>This problem tests everything:</strong> Generics (Pair&lt;K,V&gt; for type-safe data), File I/O (reading CSV + writing report with try-with-resources), Lambdas (Predicate for filtering, Function for formatting, Consumer for printing, Comparator for sorting). If you can complete this, you understand all three topics.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all 10 classes compile and run without errors.</li>
+      <li>Make sure every class is in the correct package:
+        <br><code>com.school.generics</code>, <code>com.school.fileio</code>, or <code>com.school.lambda</code></li>
+      <li>Include any generated files (<code>output.txt</code>, <code>students.csv</code>, <code>report.txt</code>, <code>students_data.csv</code>, <code>analysis_report.txt</code>) in your project folder.</li>
+      <li>Compress your entire <code>GenericsFileIOLambda</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabSeventeen-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabSeventeen-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each problem must be completed as instructed.<br>
+    &bull; Each class must have the correct package declaration.<br>
+    &bull; Class and interface names must match exactly (case-sensitive).<br>
+    &bull; Always use <code>try-with-resources</code> for file operations.<br>
+    &bull; Don't forget the required imports (<code>java.io.*</code>, <code>java.util.*</code>, <code>java.util.function.*</code>).
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Generics, File I/O &amp; Lambda Expressions &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — JUnit Testing</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --tag-pink-bg: #FBEAF0;
+    --tag-pink-text: #72243E;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+    --accent-bg: #F0ECFE;
+    --accent-main: #534AB7;
+    --accent-txt: #3C3489;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--accent-main); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-txt); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-bg); color: var(--accent-txt); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .lab-box { background: var(--accent-bg); border-left: 4px solid var(--accent-main); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--accent-txt); line-height: 1.6; }
+  .lab-box strong { color: #26215C; }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .file-test { color: #CE9178; }
+  .folder-tree .pkg { color: #4EC9B0; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--accent-main); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-basic { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-lifecycle { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-exception { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-assert { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-param { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-mock { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .tag-mixed { background: var(--tag-pink-bg); color: var(--tag-pink-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .pass-output { background: #1E1E1E; color: #6A9955; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-bg); border: 2px solid var(--accent-main); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-txt); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent-main); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Unit Testing with JUnit 5</h1>
+    <div class="header-sub">
+      This exercise covers unit testing in Java using <strong>JUnit 5 (Jupiter)</strong>:
+      writing test classes, using assertions, setting up test lifecycle methods,
+      testing for exceptions, parameterized tests, and applying test-driven
+      development (TDD) thinking. Read each problem carefully before coding.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Intermediate</div></div>
+    <div class="info-item"><div class="label">Problems</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabEighteen-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">JUnit 5, Assertions, TDD</div></div>
+  </div>
+
+  <div class="lab-box">
+    <strong>Lab instructions:</strong><br>
+    &bull; All 10 problems must compile and all tests must <strong>pass</strong> (green) without errors.<br>
+    &bull; No AI-generated code. Your instructor may ask you to explain any part of your code.<br>
+    &bull; You may refer to the official JUnit 5 documentation (<code>junit.org/junit5</code>).<br>
+    &bull; Each problem is independent — if you get stuck on one, move to the next.
+  </div>
+
+  <!-- QUICK REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead><tr><th>Topic</th><th>Key syntax / annotation</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Test method</strong></td><td><code>@Test void myTest() { }</code></td></tr>
+      <tr><td><strong>assertEquals</strong></td><td><code>assertEquals(expected, actual)</code> — checks two values are equal</td></tr>
+      <tr><td><strong>assertTrue / assertFalse</strong></td><td><code>assertTrue(condition)</code> — checks a boolean condition</td></tr>
+      <tr><td><strong>assertNull / assertNotNull</strong></td><td><code>assertNotNull(object)</code> — checks object is (not) null</td></tr>
+      <tr><td><strong>assertThrows</strong></td><td><code>assertThrows(Exception.class, () -&gt; { ... })</code> — verifies an exception is thrown</td></tr>
+      <tr><td><strong>assertAll</strong></td><td><code>assertAll(() -&gt; assertEquals(...), () -&gt; assertTrue(...))</code> — groups multiple assertions</td></tr>
+      <tr><td><strong>@BeforeEach</strong></td><td>Runs before every test method — use for setup (e.g. creating objects)</td></tr>
+      <tr><td><strong>@AfterEach</strong></td><td>Runs after every test method — use for teardown / cleanup</td></tr>
+      <tr><td><strong>@BeforeAll</strong></td><td><code>static</code> method — runs once before all tests in the class</td></tr>
+      <tr><td><strong>@AfterAll</strong></td><td><code>static</code> method — runs once after all tests in the class</td></tr>
+      <tr><td><strong>@ParameterizedTest</strong></td><td>Runs the same test with multiple inputs — combine with <code>@ValueSource</code> or <code>@CsvSource</code></td></tr>
+      <tr><td><strong>@DisplayName</strong></td><td><code>@DisplayName("human-readable label")</code> — shown in the test report</td></tr>
+      <tr><td><strong>@Disabled</strong></td><td>Skips a test method (marks it as ignored)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Maven project</strong> named <code>JUnitTesting</code>.</li>
+      <li>Add the <strong>JUnit 5</strong> dependency to your <code>pom.xml</code>:
+        <br><code>org.junit.jupiter:junit-jupiter:5.10.2</code>
+        <br>Also add <code>maven-surefire-plugin</code> version <code>3.2.5</code> so Maven can run your tests.
+      </li>
+      <li>Inside <code>src/main/java</code>, create <strong>two packages</strong>:
+        <br><code>com.school.app</code>
+        <br><code>com.school.service</code>
+      </li>
+      <li>Inside <code>src/test/java</code>, mirror the same packages for your test classes.</li>
+      <li>Each test class must import from <code>org.junit.jupiter.api.*</code> and <code>org.junit.jupiter.params.*</code> where needed.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and test method names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">JUnitTesting/</span>
+├── <span class="folder">src/</span>
+│   ├── <span class="folder">main/java/</span>
+│   │   ├── <span class="pkg">com/school/app/</span>
+│   │   │   ├── <span class="file">Calculator.java</span>
+│   │   │   ├── <span class="file">StringUtils.java</span>
+│   │   │   ├── <span class="file">BankAccount.java</span>
+│   │   │   └── <span class="file">ShoppingCart.java</span>
+│   │   └── <span class="pkg">com/school/service/</span>
+│   │       ├── <span class="file">UserValidator.java</span>
+│   │       ├── <span class="file">GradeCalculator.java</span>
+│   │       └── <span class="file">TemperatureConverter.java</span>
+│   └── <span class="folder">test/java/</span>
+│       ├── <span class="pkg">com/school/app/</span>
+│       │   ├── <span class="file-test">CalculatorTest.java</span>
+│       │   ├── <span class="file-test">StringUtilsTest.java</span>
+│       │   ├── <span class="file-test">BankAccountTest.java</span>
+│       │   └── <span class="file-test">ShoppingCartTest.java</span>
+│       └── <span class="pkg">com/school/service/</span>
+│           ├── <span class="file-test">UserValidatorTest.java</span>
+│           ├── <span class="file-test">GradeCalculatorTest.java</span>
+│           └── <span class="file-test">TemperatureConverterTest.java</span>
+└── <span class="file">pom.xml</span></div>
+
+  <div class="note-box">
+    <strong>Maven dependency snippet</strong> — add this inside <code>&lt;dependencies&gt;</code> in your <code>pom.xml</code>:<br><br>
+    <code>&lt;dependency&gt;</code><br>
+    &nbsp;&nbsp;<code>&lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;</code><br>
+    &nbsp;&nbsp;<code>&lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;</code><br>
+    &nbsp;&nbsp;<code>&lt;version&gt;5.10.2&lt;/version&gt;</code><br>
+    &nbsp;&nbsp;<code>&lt;scope&gt;test&lt;/scope&gt;</code><br>
+    <code>&lt;/dependency&gt;</code>
+  </div>
+
+  <!-- PROBLEMS -->
+  <div class="section-title">Part A — Basic Assertions (3 problems)</div>
+
+  <!-- Problem 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Calculator — arithmetic operations</span>
+      <span class="tag tag-basic">Basic</span>
+      <span class="tag tag-assert">Assertions</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.app</code></p>
+      <p>Create the production class <code>Calculator</code> with the following methods:</p>
+      <ul>
+        <li><code>public int add(int a, int b)</code></li>
+        <li><code>public int subtract(int a, int b)</code></li>
+        <li><code>public int multiply(int a, int b)</code></li>
+        <li><code>public double divide(int a, int b)</code> — throws <code>ArithmeticException</code> if <code>b == 0</code></li>
+        <li><code>public int mod(int a, int b)</code> — returns the remainder of <code>a / b</code></li>
+      </ul>
+      <p>Create <code>CalculatorTest</code>. Write the following test methods using <code>assertEquals</code>, <code>assertNotEquals</code>, and <code>assertThrows</code>:</p>
+      <ul>
+        <li><code>testAdd()</code> — verify <code>add(3, 4)</code> returns <code>7</code>, and <code>add(-1, 1)</code> returns <code>0</code></li>
+        <li><code>testSubtract()</code> — verify <code>subtract(10, 3)</code> returns <code>7</code></li>
+        <li><code>testMultiply()</code> — verify <code>multiply(5, 6)</code> returns <code>30</code> and <code>multiply(0, 99)</code> returns <code>0</code></li>
+        <li><code>testDivide()</code> — verify <code>divide(10, 2)</code> returns <code>5.0</code></li>
+        <li><code>testDivideByZero()</code> — verify that calling <code>divide(5, 0)</code> throws <code>ArithmeticException</code></li>
+        <li><code>testMod()</code> — verify <code>mod(10, 3)</code> returns <code>1</code></li>
+      </ul>
+      <div class="pass-output">✔  testAdd()          PASSED
+✔  testSubtract()     PASSED
+✔  testMultiply()     PASSED
+✔  testDivide()       PASSED
+✔  testDivideByZero() PASSED
+✔  testMod()          PASSED
+
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> Each test method must be annotated with <code>@Test</code>. An assertion failure causes that test to be marked <strong>FAILED</strong> — but other tests continue to run independently.
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">StringUtils — string helper methods</span>
+      <span class="tag tag-basic">Basic</span>
+      <span class="tag tag-assert">Assertions</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.app</code></p>
+      <p>Create the production class <code>StringUtils</code> with the following static methods:</p>
+      <ul>
+        <li><code>public static boolean isPalindrome(String s)</code> — returns true if <code>s</code> reads the same forwards and backwards (ignore case)</li>
+        <li><code>public static String reverse(String s)</code> — returns the string reversed</li>
+        <li><code>public static int countVowels(String s)</code> — counts vowels (a, e, i, o, u — case-insensitive)</li>
+        <li><code>public static boolean isNullOrEmpty(String s)</code> — returns true if null or <code>""</code></li>
+        <li><code>public static String capitalize(String s)</code> — returns the string with its first letter uppercased</li>
+      </ul>
+      <p>Create <code>StringUtilsTest</code> with the following test methods:</p>
+      <ul>
+        <li><code>testIsPalindromeTrue()</code> — assert true for <code>"racecar"</code>, <code>"Madam"</code></li>
+        <li><code>testIsPalindromeFalse()</code> — assert false for <code>"hello"</code></li>
+        <li><code>testReverse()</code> — assert <code>reverse("Java")</code> returns <code>"avaJ"</code></li>
+        <li><code>testCountVowels()</code> — assert <code>countVowels("Hello World")</code> returns <code>3</code></li>
+        <li><code>testIsNullOrEmpty()</code> — assert true for <code>null</code> and <code>""</code>; assert false for <code>"Hi"</code></li>
+        <li><code>testCapitalize()</code> — assert <code>capitalize("java")</code> returns <code>"Java"</code></li>
+      </ul>
+      <div class="pass-output">✔  testIsPalindromeTrue()  PASSED
+✔  testIsPalindromeFalse() PASSED
+✔  testReverse()           PASSED
+✔  testCountVowels()       PASSED
+✔  testIsNullOrEmpty()     PASSED
+✔  testCapitalize()        PASSED
+
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0</div>
+    </div>
+  </div>
+
+  <!-- Problem 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">assertAll — grouped assertions</span>
+      <span class="tag tag-basic">Basic</span>
+      <span class="tag tag-assert">Assertions</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.app</code></p>
+      <p>Create the production class <code>BankAccount</code> with:</p>
+      <ul>
+        <li>A constructor <code>BankAccount(String owner, double initialBalance)</code></li>
+        <li><code>public void deposit(double amount)</code> — throws <code>IllegalArgumentException</code> if amount &le; 0</li>
+        <li><code>public void withdraw(double amount)</code> — throws <code>IllegalArgumentException</code> if amount &le; 0 or amount &gt; balance</li>
+        <li><code>public double getBalance()</code></li>
+        <li><code>public String getOwner()</code></li>
+      </ul>
+      <p>Create <code>BankAccountTest</code>. Use <code>assertAll</code> to group related assertions within a single test:</p>
+      <ul>
+        <li><code>testInitialState()</code> — use <code>assertAll</code> to verify owner name, balance, and that neither is null in one block</li>
+        <li><code>testDeposit()</code> — deposit 500, then <code>assertAll</code>: balance is now 1500, not 1000, and not negative</li>
+        <li><code>testWithdraw()</code> — withdraw 200, then verify balance is 800</li>
+        <li><code>testDepositNegativeThrows()</code> — assert <code>IllegalArgumentException</code> when depositing -100</li>
+        <li><code>testOverdraftThrows()</code> — assert <code>IllegalArgumentException</code> when withdrawing more than balance</li>
+      </ul>
+      <div class="pass-output">✔  testInitialState()         PASSED
+✔  testDeposit()              PASSED
+✔  testWithdraw()             PASSED
+✔  testDepositNegativeThrows()PASSED
+✔  testOverdraftThrows()      PASSED
+
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> <code>assertAll</code> runs <em>all</em> assertions inside it even when one fails, reporting every failure at once — unlike chained assertions that stop at the first failure.
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Part B — Lifecycle &amp; State (3 problems)</div>
+
+  <!-- Problem 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">@BeforeEach / @AfterEach — test lifecycle</span>
+      <span class="tag tag-lifecycle">Lifecycle</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.app</code></p>
+      <p>Create the production class <code>ShoppingCart</code> with:</p>
+      <ul>
+        <li><code>public void addItem(String name, double price)</code></li>
+        <li><code>public boolean removeItem(String name)</code> — returns false if not found</li>
+        <li><code>public double getTotal()</code></li>
+        <li><code>public int getItemCount()</code></li>
+        <li><code>public void clear()</code></li>
+      </ul>
+      <p>Create <code>ShoppingCartTest</code>:</p>
+      <ul>
+        <li>Declare a <code>ShoppingCart cart;</code> field.</li>
+        <li>Use <code>@BeforeEach</code> to create a fresh <code>ShoppingCart</code> and add two starter items (<code>"Apple" = 1.50</code>, <code>"Bread" = 2.00</code>) before each test.</li>
+        <li>Use <code>@AfterEach</code> to call <code>cart.clear()</code> after each test and print a message like <code>"Cart cleared after test."</code> to the console.</li>
+        <li><code>testAddItem()</code> — add a third item, assert count is 3 and total is correct</li>
+        <li><code>testRemoveItem()</code> — remove <code>"Apple"</code>, assert count is 1</li>
+        <li><code>testRemoveNonExistent()</code> — assert that removing <code>"Pizza"</code> returns false</li>
+        <li><code>testGetTotal()</code> — assert total is <code>3.50</code> from the two starter items</li>
+        <li><code>testClear()</code> — call clear, assert count is 0 and total is 0.0</li>
+      </ul>
+      <div class="pass-output">Cart cleared after test.
+Cart cleared after test.
+Cart cleared after test.
+Cart cleared after test.
+Cart cleared after test.
+
+✔  testAddItem()            PASSED
+✔  testRemoveItem()         PASSED
+✔  testRemoveNonExistent()  PASSED
+✔  testGetTotal()           PASSED
+✔  testClear()              PASSED
+
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> <code>@BeforeEach</code> ensures each test starts from a known, consistent state. Without it, side effects from one test can cause false failures in another — a common bug in poorly structured test suites.
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">@BeforeAll / @AfterAll — class-level lifecycle</span>
+      <span class="tag tag-lifecycle">Lifecycle</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.service</code></p>
+      <p>Create the production class <code>UserValidator</code> with:</p>
+      <ul>
+        <li><code>public boolean isValidUsername(String username)</code> — valid if 5–15 chars, letters and digits only</li>
+        <li><code>public boolean isValidEmail(String email)</code> — valid if it contains exactly one <code>@</code> and at least one <code>.</code> after the <code>@</code></li>
+        <li><code>public boolean isValidPassword(String password)</code> — valid if at least 8 chars, contains a digit, and contains an uppercase letter</li>
+        <li><code>public boolean isValidAge(int age)</code> — valid if between 18 and 120 (inclusive)</li>
+      </ul>
+      <p>Create <code>UserValidatorTest</code>:</p>
+      <ul>
+        <li>Use <code>@BeforeAll static void setup()</code> to print <code>"=== UserValidator tests starting ==="</code>.</li>
+        <li>Use <code>@AfterAll static void teardown()</code> to print <code>"=== UserValidator tests completed ==="</code>.</li>
+        <li><code>testValidUsername()</code> — assert true for <code>"alice99"</code>, false for <code>"ab"</code> (too short) and <code>"this_user!name"</code> (invalid char)</li>
+        <li><code>testValidEmail()</code> — assert true for <code>"user@example.com"</code>, false for <code>"noatsign"</code> and <code>"bad@"</code></li>
+        <li><code>testValidPassword()</code> — assert true for <code>"Secure42!"</code>, false for <code>"password"</code> (no digit/uppercase) and <code>"Short1A"</code> (too short)</li>
+        <li><code>testValidAge()</code> — assert true for <code>25</code> and <code>18</code>, false for <code>17</code> and <code>121</code></li>
+      </ul>
+      <div class="pass-output">=== UserValidator tests starting ===
+✔  testValidUsername() PASSED
+✔  testValidEmail()    PASSED
+✔  testValidPassword() PASSED
+✔  testValidAge()      PASSED
+=== UserValidator tests completed ===
+
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0</div>
+    </div>
+  </div>
+
+  <!-- Problem 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Exception testing — GradeCalculator</span>
+      <span class="tag tag-lifecycle">Lifecycle</span>
+      <span class="tag tag-exception">Exceptions</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.service</code></p>
+      <p>Create the production class <code>GradeCalculator</code> with:</p>
+      <ul>
+        <li><code>public double average(double[] scores)</code> — throws <code>IllegalArgumentException</code> if the array is null or empty</li>
+        <li><code>public String letterGrade(double score)</code> — returns <code>"A"</code> (90–100), <code>"B"</code> (80–89), <code>"C"</code> (70–79), <code>"D"</code> (60–69), <code>"F"</code> (below 60); throws <code>IllegalArgumentException</code> if score &lt; 0 or &gt; 100</li>
+        <li><code>public boolean isPassing(double score)</code> — returns true if score &ge; 75</li>
+        <li><code>public double highest(double[] scores)</code> — returns the highest score; throws <code>IllegalArgumentException</code> if null or empty</li>
+        <li><code>public double lowest(double[] scores)</code> — returns the lowest score; throws <code>IllegalArgumentException</code> if null or empty</li>
+      </ul>
+      <p>Create <code>GradeCalculatorTest</code> using <code>@BeforeEach</code> to prepare a shared <code>double[] sampleScores = {85, 92, 78, 60, 95};</code>:</p>
+      <ul>
+        <li><code>testAverage()</code> — assert average of <code>sampleScores</code> equals <code>82.0</code></li>
+        <li><code>testAverageEmptyThrows()</code> — assert <code>IllegalArgumentException</code> for an empty array</li>
+        <li><code>testLetterGrade()</code> — assert <code>letterGrade(95)</code> is <code>"A"</code>, <code>letterGrade(82)</code> is <code>"B"</code>, <code>letterGrade(55)</code> is <code>"F"</code></li>
+        <li><code>testLetterGradeInvalidThrows()</code> — assert <code>IllegalArgumentException</code> for <code>-1</code> and <code>101</code></li>
+        <li><code>testIsPassing()</code> — assert true for <code>75</code>, false for <code>74</code></li>
+        <li><code>testHighestAndLowest()</code> — assert highest is <code>95.0</code> and lowest is <code>60.0</code></li>
+      </ul>
+      <div class="pass-output">✔  testAverage()               PASSED
+✔  testAverageEmptyThrows()    PASSED
+✔  testLetterGrade()           PASSED
+✔  testLetterGradeInvalidThrows() PASSED
+✔  testIsPassing()             PASSED
+✔  testHighestAndLowest()      PASSED
+
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> <code>assertThrows(ExceptionType.class, () -&gt; { ... })</code> passes only when the lambda body actually throws the expected exception type. You can also capture the returned exception and assert its message.
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Part C — Parameterized Tests (3 problems)</div>
+
+  <!-- Problem 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">@ParameterizedTest with @ValueSource</span>
+      <span class="tag tag-param">Parameterized</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.service</code></p>
+      <p>Reuse the <code>StringUtils</code> class from Problem 02 (copy it to <code>com.school.service</code> or keep it in <code>com.school.app</code> — adjust the import accordingly).</p>
+      <p>Create <code>TemperatureConverter</code> in <code>com.school.service</code> with:</p>
+      <ul>
+        <li><code>public double celsiusToFahrenheit(double celsius)</code> — formula: <code>(celsius * 9/5) + 32</code></li>
+        <li><code>public double fahrenheitToCelsius(double fahrenheit)</code> — formula: <code>(fahrenheit - 32) * 5/9</code></li>
+        <li><code>public double celsiusToKelvin(double celsius)</code> — formula: <code>celsius + 273.15</code></li>
+      </ul>
+      <p>Create <code>TemperatureConverterTest</code> using <strong>parameterized tests</strong>:</p>
+      <ul>
+        <li><code>@ParameterizedTest @ValueSource(doubles = {0, 100, -40, 37})</code><br>
+            <code>void testCelsiusToFahrenheitNotNull(double celsius)</code> — assert the result is not null and &gt; -500 (a basic sanity check)</li>
+        <li>Write a <code>@ParameterizedTest @CsvSource({...})</code> test <code>testCelsiusToFahrenheitExact</code> that verifies known conversions:<br>
+            <code>0 °C → 32.0 °F</code>,&nbsp; <code>100 °C → 212.0 °F</code>,&nbsp; <code>-40 °C → -40.0 °F</code></li>
+        <li>Write a <code>@ParameterizedTest @CsvSource({...})</code> test <code>testFahrenheitToCelsiusExact</code> that verifies:<br>
+            <code>32 °F → 0.0 °C</code>,&nbsp; <code>212 °F → 100.0 °C</code>,&nbsp; <code>98.6 °F → 37.0 °C</code></li>
+        <li>Write <code>testCelsiusToKelvin</code> using <code>@CsvSource</code> verifying <code>0 °C → 273.15 K</code> and <code>100 °C → 373.15 K</code></li>
+      </ul>
+      <div class="pass-output">✔  testCelsiusToFahrenheitNotNull(0.0)    PASSED
+✔  testCelsiusToFahrenheitNotNull(100.0)  PASSED
+✔  testCelsiusToFahrenheitNotNull(-40.0)  PASSED
+✔  testCelsiusToFahrenheitNotNull(37.0)   PASSED
+✔  testCelsiusToFahrenheitExact(0, 32.0)  PASSED
+✔  testCelsiusToFahrenheitExact(100, 212.0) PASSED
+✔  testCelsiusToFahrenheitExact(-40, -40.0) PASSED
+✔  testFahrenheitToCelsiusExact [3 cases]  PASSED
+✔  testCelsiusToKelvin [2 cases]           PASSED
+
+Tests run: 13, Failures: 0, Errors: 0, Skipped: 0</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> Use <code>assertEquals(expected, actual, delta)</code> when comparing <code>double</code> values — floating-point arithmetic can introduce tiny rounding errors. A delta of <code>0.001</code> is usually sufficient.
+      </div>
+    </div>
+  </div>
+
+  <!-- Problem 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">@ParameterizedTest with @CsvSource — validation rules</span>
+      <span class="tag tag-param">Parameterized</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.service</code></p>
+      <p>Create a new test class <code>UserValidatorParamTest</code> in <code>com.school.service</code> (testing the same <code>UserValidator</code> class from Problem 05).</p>
+      <p>Write the following parameterized tests:</p>
+      <ul>
+        <li><code>testUsernameValidity</code> using <code>@CsvSource</code> with at least <strong>5 rows</strong> covering valid and invalid usernames. Each row: <code>"username, expectedResult"</code>.
+          <br>Examples: <code>"alice99, true"</code>, <code>"ab, false"</code>, <code>"toolongusername123, false"</code>, <code>"ValidName1, true"</code>, <code>"bad user!, false"</code></li>
+        <li><code>testEmailValidity</code> using <code>@CsvSource</code> with at least <strong>4 rows</strong> covering valid and invalid emails.</li>
+        <li><code>testPasswordValidity</code> using <code>@CsvSource</code> with at least <strong>4 rows</strong> covering valid and invalid passwords.</li>
+        <li><code>testAgeValidity</code> using <code>@ValueSource(ints = {18, 25, 99, 120})</code> — assert all return true; then a separate test with <code>@ValueSource(ints = {0, 17, 121, -5})</code> — assert all return false.</li>
+      </ul>
+      <div class="pass-output">✔  testUsernameValidity(alice99, true)          PASSED
+✔  testUsernameValidity(ab, false)             PASSED
+✔  testUsernameValidity(toolongusername123, false) PASSED
+✔  testUsernameValidity(ValidName1, true)      PASSED
+✔  testUsernameValidity(bad user!, false)      PASSED
+✔  testEmailValidity [4 cases]                 PASSED
+✔  testPasswordValidity [4 cases]              PASSED
+✔  testAgeValidTrue [4 cases]                  PASSED
+✔  testAgeValidFalse [4 cases]                 PASSED
+
+Tests run: 21, Failures: 0, Errors: 0, Skipped: 0</div>
+    </div>
+  </div>
+
+  <!-- Problem 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">@DisplayName &amp; @Disabled — test documentation</span>
+      <span class="tag tag-param">Parameterized</span>
+      <span class="tag tag-lifecycle">Lifecycle</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.app</code></p>
+      <p>Create a new test class <code>CalculatorDisplayTest</code> that retests the <code>Calculator</code> from Problem 01, but focuses on making your test report <strong>human-readable</strong>.</p>
+      <p>Requirements:</p>
+      <ul>
+        <li>Annotate the class with <code>@DisplayName("Calculator — Full Operation Suite")</code>.</li>
+        <li>Every test method must have its own descriptive <code>@DisplayName</code>. For example:<br>
+            <code>@DisplayName("3 + 4 should equal 7")</code><br>
+            <code>@DisplayName("Dividing by zero should throw ArithmeticException")</code></li>
+        <li>Write at least <strong>6 test methods</strong> covering all 5 Calculator operations plus the divide-by-zero case.</li>
+        <li>Add one intentionally <strong>skipped</strong> test using <code>@Disabled("Feature not yet implemented — modulo for doubles")</code>. The method body can be empty or contain a placeholder assertion.</li>
+        <li>Use <code>@BeforeEach</code> to initialize the <code>Calculator</code> object.</li>
+      </ul>
+      <div class="pass-output">Calculator — Full Operation Suite
+
+✔  3 + 4 should equal 7                        PASSED
+✔  -1 + 1 should equal 0                       PASSED
+✔  10 - 3 should equal 7                       PASSED
+✔  5 × 6 should equal 30                       PASSED
+✔  10 ÷ 2 should equal 5.0                     PASSED
+✔  Dividing by zero should throw ArithmeticException  PASSED
+⊘  Feature not yet implemented — modulo for doubles   SKIPPED
+
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 1</div>
+      <div class="note-box">
+        <strong>Key concept:</strong> Good test names are documentation. A failing test with the name <em>"Dividing by zero should throw ArithmeticException"</em> instantly tells any developer what broke — no code reading required.
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Part D — Combined / TDD (1 problem)</div>
+
+  <!-- Problem 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — Library Management System (TDD)</span>
+      <span class="tag tag-basic">Basic</span>
+      <span class="tag tag-lifecycle">Lifecycle</span>
+      <span class="tag tag-exception">Exceptions</span>
+      <span class="tag tag-param">Parameterized</span>
+      <span class="tag tag-mixed">TDD</span>
+    </div>
+    <div class="exercise-body">
+      <p><strong>Package:</strong> <code>com.school.app</code></p>
+      <p>Apply <strong>Test-Driven Development (TDD)</strong>: write your test class <em>first</em>, watch the tests fail (red), then implement the production class until all tests pass (green).</p>
+      <p><strong>Step 1 — Write the test class first.</strong> Create <code>LibraryTest</code> with all test methods listed below. Since <code>Library</code> doesn't exist yet, your project won't compile — that's expected in TDD.</p>
+      <p><strong>Step 2 — Create the production class</strong> <code>Library</code> with:</p>
+      <ul>
+        <li><code>public void addBook(String title, String author, int year)</code> — throws <code>IllegalArgumentException</code> if title is null/empty or year &lt; 1000</li>
+        <li><code>public boolean removeBook(String title)</code> — returns false if not found</li>
+        <li><code>public boolean hasBook(String title)</code></li>
+        <li><code>public int getBookCount()</code></li>
+        <li><code>public List&lt;String&gt; searchByAuthor(String author)</code> — returns titles by that author (case-insensitive), empty list if none found</li>
+        <li><code>public List&lt;String&gt; getBooksAfterYear(int year)</code> — returns titles published strictly after the given year</li>
+      </ul>
+      <p><strong>Step 3 — Tests to implement in <code>LibraryTest</code>:</strong></p>
+      <ul>
+        <li><code>@BeforeEach setUp()</code> — create a new <code>Library</code> and add 3–4 sample books of your choice</li>
+        <li><code>testAddBook()</code> — assert count increases correctly</li>
+        <li><code>testAddBookInvalidThrows()</code> — assert <code>IllegalArgumentException</code> for null title and invalid year</li>
+        <li><code>testRemoveBook()</code> — assert book is gone after removal</li>
+        <li><code>testRemoveNonExistentBook()</code> — assert returns false</li>
+        <li><code>testHasBook()</code> — assert true for existing, false for non-existing</li>
+        <li><code>@ParameterizedTest @CsvSource testSearchByAuthor</code> — test at least 2 valid authors and 1 unknown author</li>
+        <li><code>testGetBooksAfterYear()</code> — assert only books published after a given year are returned</li>
+        <li>At least one test using <code>assertAll</code> to group related state assertions</li>
+        <li>At least one test annotated with <code>@DisplayName</code></li>
+      </ul>
+      <div class="pass-output">✔  testAddBook()                  PASSED
+✔  testAddBookInvalidThrows()     PASSED
+✔  testRemoveBook()               PASSED
+✔  testRemoveNonExistentBook()    PASSED
+✔  testHasBook()                  PASSED
+✔  testSearchByAuthor [3 cases]   PASSED
+✔  testGetBooksAfterYear()        PASSED
+✔  [assertAll grouped state test] PASSED
+✔  [DisplayName test]             PASSED
+
+Tests run: 9+, Failures: 0, Errors: 0, Skipped: 0</div>
+      <div class="note-box">
+        <strong>This problem tests everything:</strong> <code>@BeforeEach</code> for shared setup, <code>assertThrows</code> for exception cases, <code>assertAll</code> for grouped state checks, <code>@ParameterizedTest / @CsvSource</code> for data-driven verification, and <code>@DisplayName</code> for readable reports — plus TDD discipline of writing tests before code.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all test classes compile and all tests show <strong>PASSED</strong> (green) in IntelliJ or via <code>mvn test</code>.</li>
+      <li>Make sure every production class is in the correct package:
+        <br><code>com.school.app</code> or <code>com.school.service</code></li>
+      <li>Make sure every test class mirrors the same package under <code>src/test/java</code>.</li>
+      <li>Do <strong>not</strong> delete or rename any test method — your instructor will run the test suite as-is.</li>
+      <li>Compress your entire <code>JUnitTesting</code> project folder (including <code>pom.xml</code>) into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabEighteen-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabEighteen-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Every test method must be annotated with <code>@Test</code> or <code>@ParameterizedTest</code>.<br>
+    &bull; Import statements: <code>import org.junit.jupiter.api.*;</code> and <code>import org.junit.jupiter.params.*;</code>.<br>
+    &bull; Class and method names must match exactly (case-sensitive).<br>
+    &bull; Use <code>assertEquals(expected, actual, delta)</code> when comparing <code>double</code> values.<br>
+    &bull; <code>@BeforeAll</code> and <code>@AfterAll</code> methods must be <code>static</code>.
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Unit Testing with JUnit 5 &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

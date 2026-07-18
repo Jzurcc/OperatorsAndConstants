@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Static &amp; Non-Static</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-static-var { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-static-method { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-nonstatic-var { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-nonstatic-method { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-mixed { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .tag-error { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .error-output { background: #2D1117; color: #F08080; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Static &amp; Non-Static</h1>
+    <div class="header-sub">
+      This exercise covers the difference between <strong>static</strong> (belongs to the class) and
+      <strong>non-static / instance</strong> (belongs to the object) for both <strong>variables</strong>
+      and <strong>methods</strong>. You will observe how they behave differently in memory, access, and usage.
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Beginner</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabNine-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">Static vs Non-Static</div></div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Static</th>
+        <th>Non-static (instance)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Variable</strong></td>
+        <td>One copy shared by all objects. Accessed via <code>ClassName.variable</code>.</td>
+        <td>Each object has its own copy. Accessed via <code>object.variable</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>Method</strong></td>
+        <td>Called without an object: <code>ClassName.method()</code>. Cannot access instance members directly.</td>
+        <td>Called on an object: <code>object.method()</code>. Can access both static and instance members.</td>
+      </tr>
+      <tr>
+        <td><strong>Memory</strong></td>
+        <td>Loaded once when the class is loaded.</td>
+        <td>Created each time <code>new</code> is called.</td>
+      </tr>
+      <tr>
+        <td><strong>Use when</strong></td>
+        <td>Value or behavior is shared (counters, utility methods, constants).</td>
+        <td>Value or behavior is unique per object.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>StaticAndNonStatic</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.staticdemo</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class files specified inside the <code>com.school.staticdemo</code> package.</li>
+      <li>Each test class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">StaticAndNonStatic/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/staticdemo/</span>
+        ├── <span class="file">Counter.java</span>
+        ├── <span class="file">TestCounter.java</span>
+        ├── <span class="file">Student.java</span>
+        ├── <span class="file">TestStudent.java</span>
+        ├── <span class="file">MathHelper.java</span>
+        ├── <span class="file">TestMathHelper.java</span>
+        ├── <span class="file">Dog.java</span>
+        ├── <span class="file">TestDog.java</span>
+        ├── <span class="file">AccessRules.java</span>
+        ├── <span class="file">TestAccessRules.java</span>
+        ├── <span class="file">BankAccount.java</span>
+        ├── <span class="file">TestBankAccount.java</span>
+        ├── <span class="file">StringUtils.java</span>
+        ├── <span class="file">TestStringUtils.java</span>
+        ├── <span class="file">Config.java</span>
+        ├── <span class="file">TestConfig.java</span>
+        ├── <span class="file">Ticket.java</span>
+        ├── <span class="file">TestTicket.java</span>
+        ├── <span class="file">Classroom.java</span>
+        └── <span class="file">TestClassroom.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Static variable — Shared counter</span>
+      <span class="tag tag-static-var">Static variable</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Counter</code> with:</p>
+      <ul>
+        <li><code>static int count = 0;</code> — shared across all objects</li>
+        <li><code>String label;</code> — unique to each object (non-static)</li>
+      </ul>
+      <p>Create a constructor that accepts <code>label</code> and increments <code>count</code> by 1.</p>
+      <p>Create <code>TestCounter</code>. Create 4 <code>Counter</code> objects with different labels. After each creation, print <code>Counter.count</code>.</p>
+      <div class="expected-output">Created: Alpha — Count: 1
+Created: Beta — Count: 2
+Created: Gamma — Count: 3
+Created: Delta — Count: 4
+
+Accessing count via class name: Counter.count = 4
+Accessing count via object: 4 (same value — it's shared)</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> All 4 objects share the same <code>count</code> variable. Changing it through one object changes it for all. Access it via <code>Counter.count</code> (preferred) or via any object.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">Non-static variable — Each object is unique</span>
+      <span class="tag tag-nonstatic-var">Non-static variable</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Student</code> with:</p>
+      <ul>
+        <li><code>String name;</code> — non-static (instance)</li>
+        <li><code>int age;</code> — non-static (instance)</li>
+        <li><code>double gpa;</code> — non-static (instance)</li>
+      </ul>
+      <p>Create a parameterized constructor for all fields and a <code>displayInfo()</code> method.</p>
+      <p>Create <code>TestStudent</code>. Create 3 students, then change one student's GPA. Print all three to show that changing one object does <strong>not</strong> affect the others.</p>
+      <div class="expected-output">--- Before change ---
+Alice, Age 20, GPA: 3.5
+Bob, Age 21, GPA: 2.8
+Charlie, Age 19, GPA: 3.9
+
+Changing Bob's GPA to 3.1...
+
+--- After change ---
+Alice, Age 20, GPA: 3.5
+Bob, Age 21, GPA: 3.1
+Charlie, Age 19, GPA: 3.9</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Non-static fields belong to each individual object. Changing Bob's GPA does not affect Alice or Charlie — each object has its own memory.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">Static method — Utility class</span>
+      <span class="tag tag-static-method">Static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>MathHelper</code> with <strong>only static methods</strong> (no instance fields, no constructor needed):</p>
+      <ul>
+        <li><code>public static int add(int a, int b)</code></li>
+        <li><code>public static int subtract(int a, int b)</code></li>
+        <li><code>public static int multiply(int a, int b)</code></li>
+        <li><code>public static double divide(int a, int b)</code> — return 0 if b is 0</li>
+        <li><code>public static int max(int a, int b)</code></li>
+        <li><code>public static int min(int a, int b)</code></li>
+      </ul>
+      <p>Create <code>TestMathHelper</code>. Call all methods <strong>without creating an object</strong> — use <code>MathHelper.add(10, 5)</code> directly.</p>
+      <div class="expected-output">MathHelper.add(10, 5) = 15
+MathHelper.subtract(10, 5) = 5
+MathHelper.multiply(10, 5) = 50
+MathHelper.divide(10, 5) = 2.0
+MathHelper.divide(10, 0) = 0.0
+MathHelper.max(10, 5) = 10
+MathHelper.min(10, 5) = 5</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Static methods belong to the class, not to objects. You call them using the class name directly. Utility/helper classes often contain only static methods — Java's <code>Math</code> class works this way.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">Non-static method — Object behavior</span>
+      <span class="tag tag-nonstatic-method">Non-static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Dog</code> with:</p>
+      <ul>
+        <li><code>String name;</code></li>
+        <li><code>String breed;</code></li>
+        <li><code>int energy;</code> — starts at 100</li>
+      </ul>
+      <p>Create a constructor that sets name and breed, and initializes energy to 100.</p>
+      <p>Add <strong>non-static methods</strong>:</p>
+      <ul>
+        <li><code>public void play()</code> — decreases energy by 20 and prints a message. If energy is below 20, print "Too tired to play!"</li>
+        <li><code>public void eat()</code> — increases energy by 30 (cap at 100) and prints a message</li>
+        <li><code>public void displayStatus()</code> — prints name, breed, and current energy</li>
+      </ul>
+      <p>Create <code>TestDog</code>. Create two dogs. Play and feed them separately — show that each dog's energy is independent.</p>
+      <div class="expected-output">--- Initial status ---
+Bantay (Aspin): Energy = 100
+Coco (Poodle): Energy = 100
+
+Bantay plays!
+Bantay (Aspin): Energy = 80
+Bantay plays!
+Bantay (Aspin): Energy = 60
+
+Coco eats!
+Coco (Poodle): Energy = 100
+
+Bantay eats!
+Bantay (Aspin): Energy = 90
+
+Coco plays!
+Coco (Poodle): Energy = 80</div>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">Access rules — What can access what</span>
+      <span class="tag tag-error">Error demo</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>AccessRules</code> with:</p>
+      <ul>
+        <li><code>static String className = "AccessRules";</code></li>
+        <li><code>String instanceName = "Object-Level";</code></li>
+      </ul>
+      <p>Add four methods:</p>
+      <ul>
+        <li><code>public static void staticMethod()</code> — prints <code>className</code>. Try to print <code>instanceName</code> — it will cause a compile error.</li>
+        <li><code>public void instanceMethod()</code> — prints both <code>className</code> and <code>instanceName</code> (this works because instance methods can access static members).</li>
+        <li><code>public static void callInstanceMethod()</code> — try to call <code>instanceMethod()</code> directly — compile error. Write the error as a comment.</li>
+        <li><code>public void callStaticMethod()</code> — call <code>staticMethod()</code> directly — this works.</li>
+      </ul>
+      <p>Create <code>TestAccessRules</code>. Demonstrate what works and what doesn't.</p>
+      <div class="expected-output">--- Static method accessing static variable ---
+Class name: AccessRules
+
+--- Instance method accessing both ---
+Class name: AccessRules
+Instance name: Object-Level
+
+--- Instance method calling static method ---
+Class name: AccessRules</div>
+      <div class="error-output">// Inside staticMethod(): instanceName → ERROR: non-static variable instanceName cannot be referenced from a static context
+// Inside callInstanceMethod(): instanceMethod() → ERROR: non-static method instanceMethod() cannot be referenced from a static context</div>
+      <div class="note-box">
+        <strong>Key learning:</strong><br>
+        &#10003; Static can access static.<br>
+        &#10003; Instance can access static.<br>
+        &#10003; Instance can access instance.<br>
+        &#10007; Static <strong>cannot</strong> access instance (no object exists yet).
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Static + non-static together — BankAccount</span>
+      <span class="tag tag-static-var">Static variable</span>
+      <span class="tag tag-nonstatic-var">Non-static variable</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>BankAccount</code> with:</p>
+      <p><strong>Static members (shared):</strong></p>
+      <ul>
+        <li><code>static String bankName = "Java National Bank";</code></li>
+        <li><code>static int totalAccounts = 0;</code></li>
+        <li><code>static double totalDeposits = 0;</code></li>
+        <li><code>public static void displayBankSummary()</code> — prints bank name, total accounts, and total deposits</li>
+      </ul>
+      <p><strong>Non-static members (per object):</strong></p>
+      <ul>
+        <li><code>String owner;</code></li>
+        <li><code>double balance;</code></li>
+        <li>A constructor that sets owner and balance, increments <code>totalAccounts</code>, and adds balance to <code>totalDeposits</code></li>
+        <li><code>public void deposit(double amount)</code> — adds to both <code>balance</code> and <code>totalDeposits</code></li>
+        <li><code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>TestBankAccount</code>. Create 3 accounts with different balances, deposit into one, then call both instance and static display methods.</p>
+      <div class="expected-output">--- Individual accounts ---
+Owner: Alice — Balance: 10000.0
+Owner: Bob — Balance: 25000.0
+Owner: Charlie — Balance: 5000.0
+
+Alice deposits 5000.0...
+
+--- After deposit ---
+Owner: Alice — Balance: 15000.0
+
+--- Bank summary (static) ---
+Bank: Java National Bank
+Total accounts: 3
+Total deposits: 45000.0</div>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">Static utility methods — StringUtils</span>
+      <span class="tag tag-static-method">Static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>StringUtils</code> with <strong>only static methods</strong>:</p>
+      <ul>
+        <li><code>public static String reverse(String str)</code> — returns the string reversed</li>
+        <li><code>public static int countVowels(String str)</code> — returns the number of vowels (a, e, i, o, u — case insensitive)</li>
+        <li><code>public static String capitalize(String str)</code> — returns the string with the first letter uppercased</li>
+        <li><code>public static boolean isPalindrome(String str)</code> — returns true if the string reads the same forward and backward (case insensitive)</li>
+      </ul>
+      <p>Create <code>TestStringUtils</code>. Test each method with sample strings.</p>
+      <div class="expected-output">reverse("Hello") = olleH
+countVowels("Programming") = 3
+capitalize("java") = Java
+isPalindrome("Racecar") = true
+isPalindrome("Hello") = false</div>
+      <p><em>Hint: to reverse, use a for loop from the last character to the first, building a new String.</em></p>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Static constants + static method — Config</span>
+      <span class="tag tag-static-var">Static variable</span>
+      <span class="tag tag-static-method">Static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Config</code> with:</p>
+      <ul>
+        <li><code>static final String APP_NAME = "SchoolSystem";</code></li>
+        <li><code>static final String VERSION = "2.1.0";</code></li>
+        <li><code>static final int MAX_STUDENTS = 50;</code></li>
+        <li><code>static final double TAX_RATE = 0.12;</code></li>
+        <li><code>static int currentStudentCount = 0;</code> — not final, can change</li>
+      </ul>
+      <p>Add static methods:</p>
+      <ul>
+        <li><code>public static void enrollStudent()</code> — increments count if under max, prints confirmation or error</li>
+        <li><code>public static int getRemainingSlots()</code> — returns <code>MAX_STUDENTS - currentStudentCount</code></li>
+        <li><code>public static void displayConfig()</code> — prints all config values</li>
+      </ul>
+      <p>Create <code>TestConfig</code>. Display config, enroll 3 students, print remaining slots.</p>
+      <div class="expected-output">--- System Configuration ---
+App: SchoolSystem v2.1.0
+Max students: 50
+Tax rate: 12.0%
+
+Enrolling student... Current: 1
+Enrolling student... Current: 2
+Enrolling student... Current: 3
+
+Remaining slots: 47</div>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">Auto-ID with static + instance data — Ticket</span>
+      <span class="tag tag-static-var">Static variable</span>
+      <span class="tag tag-nonstatic-method">Non-static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Ticket</code> with:</p>
+      <p><strong>Static members:</strong></p>
+      <ul>
+        <li><code>static int nextTicketNumber = 1000;</code></li>
+        <li><code>static double totalRevenue = 0;</code></li>
+        <li><code>static int totalTicketsSold = 0;</code></li>
+        <li><code>public static void displaySalesSummary()</code></li>
+      </ul>
+      <p><strong>Non-static members:</strong></p>
+      <ul>
+        <li><code>int ticketNumber;</code></li>
+        <li><code>String eventName;</code></li>
+        <li><code>String buyerName;</code></li>
+        <li><code>double price;</code></li>
+      </ul>
+      <p>Create a constructor that auto-assigns <code>ticketNumber</code> (increment <code>nextTicketNumber</code>), sets all fields, and updates <code>totalRevenue</code> and <code>totalTicketsSold</code>.</p>
+      <p>Add a non-static <code>displayTicket()</code> method.</p>
+      <p>Create <code>TestTicket</code>. Create 4 tickets for different events and buyers. Print each ticket, then print the sales summary.</p>
+      <div class="expected-output">--- Ticket #1001 ---
+Event: Java Conference
+Buyer: Alice
+Price: 1500.0
+
+--- Ticket #1002 ---
+Event: Java Conference
+Buyer: Bob
+Price: 1500.0
+
+--- Ticket #1003 ---
+Event: Music Festival
+Buyer: Charlie
+Price: 2500.0
+
+--- Ticket #1004 ---
+Event: Music Festival
+Buyer: Diana
+Price: 2500.0
+
+=== Sales Summary ===
+Total tickets sold: 4
+Total revenue: 8000.0</div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — Classroom manager</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Classroom</code> that uses both static and non-static members together.</p>
+      <p><strong>Static members (school-wide):</strong></p>
+      <ul>
+        <li><code>static String schoolName = "Greenfield Academy";</code></li>
+        <li><code>static int totalClassrooms = 0;</code></li>
+        <li><code>static int totalStudentsEnrolled = 0;</code></li>
+        <li><code>static final int MAX_PER_CLASS = 5;</code></li>
+        <li><code>public static void displaySchoolSummary()</code> — prints school name, total classrooms, total students</li>
+      </ul>
+      <p><strong>Non-static members (per classroom):</strong></p>
+      <ul>
+        <li><code>int classroomId;</code></li>
+        <li><code>String teacher;</code></li>
+        <li><code>String subject;</code></li>
+        <li><code>String[] students;</code> — max 5</li>
+        <li><code>int studentCount;</code></li>
+      </ul>
+      <p>Create a constructor that accepts teacher and subject, auto-assigns <code>classroomId</code> from <code>totalClassrooms</code>, and initializes the array.</p>
+      <p>Add non-static methods:</p>
+      <ul>
+        <li><code>public void enroll(String name)</code> — adds student if not full, increments both <code>studentCount</code> and <code>totalStudentsEnrolled</code></li>
+        <li><code>public boolean isFull()</code></li>
+        <li><code>public void displayClassInfo()</code></li>
+      </ul>
+      <p>Create <code>TestClassroom</code>. Create 2 classrooms, enroll students, display each, then display the school-wide summary.</p>
+      <div class="expected-output">========================================
+  Classroom #1 — Java Programming
+========================================
+Teacher: Mr. Garcia
+Students:
+  1. Alice
+  2. Bob
+  3. Charlie
+Enrolled: 3/5 | Full: false
+
+========================================
+  Classroom #2 — Data Structures
+========================================
+Teacher: Ms. Reyes
+Students:
+  1. Diana
+  2. Edward
+  3. Fiona
+  4. George
+  5. Hannah
+Enrolled: 5/5 | Full: true
+
+Attempting to enroll "Ivan" in Classroom #2...
+Error: Classroom is full.
+
+========================================
+  SCHOOL SUMMARY (static)
+========================================
+School: Greenfield Academy
+Total classrooms: 2
+Total students enrolled: 8
+========================================</div>
+      <div class="note-box">
+        <strong>Key takeaway:</strong> Static members track school-wide data (total classrooms, total students) shared across all objects. Non-static members track per-classroom data (teacher, student list). Both work together — the <code>enroll()</code> method updates instance data <em>and</em> static data in the same call.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all classes compile and run without errors (failing lines should be commented out with error messages).</li>
+      <li>Make sure every class is inside the <code>com.school.staticdemo</code> package.</li>
+      <li>Compress your entire <code>StaticAndNonStatic</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabNine-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabNine-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class must have the correct package declaration: <code>package com.school.staticdemo;</code><br>
+    &bull; Class names must match exactly (case-sensitive).<br>
+    &bull; Every exercise has <strong>two files</strong> — the model class and the test class. Don't forget either one.<br>
+    &bull; Comment out lines that cause compile errors and write the error message as a comment.
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Static &amp; Non-Static &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

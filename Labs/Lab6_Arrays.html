@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Arrays</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-declare { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-traverse { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-modify { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-search { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-sort { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-mixed { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Arrays</h1>
+    <div class="header-sub">
+      This exercise covers single-dimensional arrays in Java: declaring, initializing, traversing,
+      modifying, searching, and sorting. You will practice using both <strong>for loops</strong>
+      and <strong>enhanced for loops</strong> to work with arrays.
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Beginner</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabSix-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">Arrays (1D)</div></div>
+  </div>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>Arrays</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.arrays</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class file specified inside the <code>com.school.arrays</code> package.</li>
+      <li>Each class <strong>must have</strong> a <code>public static void main(String[] args)</code> method that demonstrates the required output.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">Arrays/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/arrays/</span>
+        ├── <span class="file">ArrayDeclaration.java</span>
+        ├── <span class="file">ArrayInitialization.java</span>
+        ├── <span class="file">ArrayTraversal.java</span>
+        ├── <span class="file">ArrayModify.java</span>
+        ├── <span class="file">ArrayLength.java</span>
+        ├── <span class="file">ArrayMinMax.java</span>
+        ├── <span class="file">ArraySearch.java</span>
+        ├── <span class="file">ArrayReverse.java</span>
+        ├── <span class="file">ArraySort.java</span>
+        └── <span class="file">StudentGrades.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Declaring arrays</span>
+      <span class="tag tag-declare">Declaration</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayDeclaration</code>.</p>
+      <p>Inside <code>main</code>, declare arrays using <strong>two different approaches</strong>:</p>
+      <ol>
+        <li><strong>Declare then allocate:</strong> Declare an <code>int[]</code> named <code>numbers</code> with size 5. Assign values to each index manually (index 0 through 4).</li>
+        <li><strong>Declare and initialize in one line:</strong> Declare a <code>String[]</code> named <code>colors</code> with values <code>{"Red", "Green", "Blue", "Yellow", "White"}</code>.</li>
+      </ol>
+      <p>Print all elements of both arrays using a <code>for</code> loop.</p>
+      <div class="expected-output">--- numbers[] ---
+numbers[0] = 10
+numbers[1] = 20
+numbers[2] = 30
+numbers[3] = 40
+numbers[4] = 50
+
+--- colors[] ---
+colors[0] = Red
+colors[1] = Green
+colors[2] = Blue
+colors[3] = Yellow
+colors[4] = White</div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">Default values of arrays</span>
+      <span class="tag tag-declare">Declaration</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayInitialization</code>.</p>
+      <p>Inside <code>main</code>, declare the following arrays with <strong>only a size — do NOT assign any values</strong>:</p>
+      <ul>
+        <li><code>int[] intArr = new int[3];</code></li>
+        <li><code>double[] doubleArr = new double[3];</code></li>
+        <li><code>boolean[] boolArr = new boolean[3];</code></li>
+        <li><code>char[] charArr = new char[3];</code></li>
+        <li><code>String[] strArr = new String[3];</code></li>
+      </ul>
+      <p>Use a <code>for</code> loop to print every element of each array. Observe Java's default values.</p>
+      <div class="expected-output">--- int defaults ---
+intArr[0] = 0
+intArr[1] = 0
+intArr[2] = 0
+
+--- double defaults ---
+doubleArr[0] = 0.0
+doubleArr[1] = 0.0
+doubleArr[2] = 0.0
+
+--- boolean defaults ---
+boolArr[0] = false
+boolArr[1] = false
+boolArr[2] = false
+
+--- char defaults ---
+charArr[0] =
+charArr[1] =
+charArr[2] =
+
+--- String defaults ---
+strArr[0] = null
+strArr[1] = null
+strArr[2] = null</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Java automatically fills arrays with default values: <code>0</code> for numeric types, <code>false</code> for boolean, <code>'\u0000'</code> (blank) for char, and <code>null</code> for objects like String.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">Traversing with for and enhanced for</span>
+      <span class="tag tag-traverse">Traversal</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayTraversal</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>double[] prices = {129.99, 249.50, 89.00, 549.99, 199.75};</code></li>
+      </ul>
+      <p>Print all elements <strong>twice</strong> — first using a <strong>regular for loop</strong> (with index), then using an <strong>enhanced for loop</strong> (for-each).</p>
+      <div class="expected-output">--- Using for loop ---
+prices[0] = 129.99
+prices[1] = 249.5
+prices[2] = 89.0
+prices[3] = 549.99
+prices[4] = 199.75
+
+--- Using enhanced for loop ---
+Price: 129.99
+Price: 249.5
+Price: 89.0
+Price: 549.99
+Price: 199.75</div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">Modifying array elements</span>
+      <span class="tag tag-modify">Modify</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayModify</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>int[] scores = {78, 55, 92, 41, 88};</code></li>
+        <li><code>int bonusPoints = 10;</code></li>
+      </ul>
+      <p>Do the following:</p>
+      <ol>
+        <li>Print the original array.</li>
+        <li>Using a <code>for</code> loop, add <code>bonusPoints</code> to every element.</li>
+        <li>Print the modified array.</li>
+        <li>Set any score that exceeds 100 to exactly 100 (cap it).</li>
+        <li>Print the final array.</li>
+      </ol>
+      <div class="expected-output">--- Original scores ---
+78 55 92 41 88
+
+--- After adding 10 bonus points ---
+88 65 102 51 98
+
+--- After capping at 100 ---
+88 65 100 51 98</div>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">Array length and sum</span>
+      <span class="tag tag-traverse">Traversal</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayLength</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>int[] sales = {12000, 15500, 9800, 21000, 17300, 11200};</code></li>
+      </ul>
+      <p>Using the array's <code>.length</code> property and a loop, compute and print:</p>
+      <ol>
+        <li>The total number of months (array length)</li>
+        <li>The total sales (sum of all elements)</li>
+        <li>The average monthly sales (integer division)</li>
+      </ol>
+      <div class="expected-output">Monthly sales data:
+  Month 1: 12000
+  Month 2: 15500
+  Month 3: 9800
+  Month 4: 21000
+  Month 5: 17300
+  Month 6: 11200
+
+Total months: 6
+Total sales: 86800
+Average monthly sales: 14466</div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Finding minimum and maximum</span>
+      <span class="tag tag-search">Search</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayMinMax</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>int[] temperatures = {32, 28, 35, 41, 27, 39, 33};</code></li>
+      </ul>
+      <p>Using a <code>for</code> loop, find and print:</p>
+      <ol>
+        <li>The highest temperature and which day (index) it occurred</li>
+        <li>The lowest temperature and which day (index) it occurred</li>
+        <li>The difference between the highest and lowest</li>
+      </ol>
+      <div class="expected-output">Daily temperatures:
+  Day 0: 32°C
+  Day 1: 28°C
+  Day 2: 35°C
+  Day 3: 41°C
+  Day 4: 27°C
+  Day 5: 39°C
+  Day 6: 33°C
+
+Highest: 41°C (Day 3)
+Lowest: 27°C (Day 4)
+Difference: 14°C</div>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">Linear search</span>
+      <span class="tag tag-search">Search</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArraySearch</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>String[] names = {"Alice", "Bob", "Charlie", "Diana", "Edward", "Fiona"};</code></li>
+        <li><code>String searchName = "Diana";</code></li>
+        <li><code>String notFoundName = "Zara";</code></li>
+      </ul>
+      <p>Write a <code>for</code> loop that searches through the array. Use <code>.equals()</code> to compare Strings. If found, print the name and its index. If not found, print a "not found" message.</p>
+      <p>Search for <strong>both</strong> names.</p>
+      <div class="expected-output">Searching for "Diana"...
+Found "Diana" at index 3.
+
+Searching for "Zara"...
+"Zara" was not found in the array.</div>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Reversing an array</span>
+      <span class="tag tag-modify">Modify</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayReverse</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>int[] original = {10, 20, 30, 40, 50, 60};</code></li>
+      </ul>
+      <p>Do the following:</p>
+      <ol>
+        <li>Print the original array.</li>
+        <li>Create a <strong>new array</strong> called <code>reversed</code> with the same length.</li>
+        <li>Using a <code>for</code> loop, copy elements from <code>original</code> into <code>reversed</code> in reverse order.</li>
+        <li>Print the reversed array.</li>
+      </ol>
+      <div class="expected-output">Original: 10 20 30 40 50 60
+Reversed: 60 50 40 30 20 10</div>
+      <div class="note-box">
+        <strong>Hint:</strong> To reverse, you can use <code>reversed[i] = original[original.length - 1 - i];</code> inside your loop.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">Sorting with Arrays.sort()</span>
+      <span class="tag tag-sort">Sort</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArraySort</code>.</p>
+      <p>At the top of your file (after the package line), add: <code>import java.util.Arrays;</code></p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>int[] scores = {72, 95, 48, 81, 67, 90, 55};</code></li>
+        <li><code>String[] fruits = {"Mango", "Apple", "Cherry", "Banana", "Elderberry"};</code></li>
+      </ul>
+      <p>Do the following:</p>
+      <ol>
+        <li>Print both arrays <strong>before</strong> sorting.</li>
+        <li>Use <code>Arrays.sort()</code> to sort each array.</li>
+        <li>Print both arrays <strong>after</strong> sorting.</li>
+        <li>Use <code>Arrays.toString()</code> to print them in a clean format.</li>
+      </ol>
+      <div class="expected-output">--- Before sorting ---
+Scores: [72, 95, 48, 81, 67, 90, 55]
+Fruits: [Mango, Apple, Cherry, Banana, Elderberry]
+
+--- After sorting ---
+Scores: [48, 55, 67, 72, 81, 90, 95]
+Fruits: [Apple, Banana, Cherry, Elderberry, Mango]</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>Arrays.sort()</code> sorts numbers in ascending order and Strings in alphabetical order. <code>Arrays.toString()</code> returns a nicely formatted string representation of an array.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — Student grades report</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>StudentGrades</code>.</p>
+      <p>At the top, add: <code>import java.util.Arrays;</code></p>
+      <p>Declare a <strong>static final</strong> constant:</p>
+      <ul>
+        <li><code>static final double PASSING_GRADE = 75.0;</code></li>
+      </ul>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>String[] students = {"Alice", "Bob", "Charlie", "Diana", "Edward"};</code></li>
+        <li><code>double[] grades = {88.5, 62.0, 91.0, 74.5, 95.5};</code></li>
+      </ul>
+      <p>Do the following:</p>
+      <ol>
+        <li>Print each student with their grade and whether they <strong>passed</strong> or <strong>failed</strong>.</li>
+        <li>Compute and print the <strong>class average</strong>.</li>
+        <li>Find and print the <strong>highest</strong> and <strong>lowest</strong> grade with the student name.</li>
+        <li>Count and print how many students <strong>passed</strong> and how many <strong>failed</strong>.</li>
+        <li>Create a <strong>copy</strong> of the grades array, sort the copy, and print the sorted grades.</li>
+      </ol>
+      <div class="expected-output">========================================
+         STUDENT GRADES REPORT
+========================================
+
+Name         Grade    Status
+----         -----    ------
+Alice        88.5     Passed
+Bob          62.0     Failed
+Charlie      91.0     Passed
+Diana        74.5     Failed
+Edward       95.5     Passed
+
+Class average: 82.3
+Highest grade: 95.5 (Edward)
+Lowest grade: 62.0 (Bob)
+
+Passed: 3 student(s)
+Failed: 2 student(s)
+
+Grades sorted: [62.0, 74.5, 88.5, 91.0, 95.5]
+========================================</div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all 10 classes compile and run without errors.</li>
+      <li>Make sure every class is inside the <code>com.school.arrays</code> package.</li>
+      <li>Compress your entire <code>Arrays</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabSix-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabSix-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class must have the correct package declaration: <code>package com.school.arrays;</code><br>
+    &bull; Class names must match exactly (case-sensitive).<br>
+    &bull; Don't forget to add <code>import java.util.Arrays;</code> in exercises that use <code>Arrays.sort()</code> or <code>Arrays.toString()</code>.
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Arrays &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

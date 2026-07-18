@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Abstraction (Abstract Classes &amp; Interfaces)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --tag-pink-bg: #FBEAF0;
+    --tag-pink-text: #72243E;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-abstract { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-interface { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-default-method { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-static-method { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-multi { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-poly { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .tag-mixed { background: #F1EFE8; color: #444441; }
+  .tag-error { background: var(--tag-pink-bg); color: var(--tag-pink-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .error-output { background: #2D1117; color: #F08080; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Abstraction — Abstract Classes &amp; Interfaces</h1>
+    <div class="header-sub">
+      This exercise covers <strong>abstraction</strong> — one of the four pillars of Object-Oriented Programming.
+      You will practice creating <strong>abstract classes</strong>, implementing <strong>interfaces</strong>
+      (including <code>default</code> and <code>static</code> methods introduced in Java 8+),
+      and combining both to build flexible, contract-driven designs.
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Intermediate</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabTwelve-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">Abstract, Interface, default, static</div></div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Abstract class</th>
+        <th>Interface</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+        <td><code>abstract class</code></td>
+        <td><code>interface</code></td>
+      </tr>
+      <tr>
+        <td><strong>Can have fields?</strong></td>
+        <td>Yes (any type, any modifier)</td>
+        <td>Only <code>public static final</code> (constants)</td>
+      </tr>
+      <tr>
+        <td><strong>Constructors?</strong></td>
+        <td>Yes (called via <code>super()</code>)</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td><strong>Abstract methods?</strong></td>
+        <td>Yes (<code>abstract</code> keyword)</td>
+        <td>Yes (abstract by default — no keyword needed)</td>
+      </tr>
+      <tr>
+        <td><strong>Concrete methods?</strong></td>
+        <td>Yes</td>
+        <td>Yes — <code>default</code> methods (Java 8+)</td>
+      </tr>
+      <tr>
+        <td><strong>Static methods?</strong></td>
+        <td>Yes</td>
+        <td>Yes — <code>static</code> methods (Java 8+)</td>
+      </tr>
+      <tr>
+        <td><strong>Multiple?</strong></td>
+        <td>A class can extend only <strong>one</strong> abstract class</td>
+        <td>A class can implement <strong>multiple</strong> interfaces</td>
+      </tr>
+      <tr>
+        <td><strong>Instantiate?</strong></td>
+        <td>Cannot use <code>new</code> directly</td>
+        <td>Cannot use <code>new</code> directly</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>Abstraction</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.abstraction</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class/interface files specified inside the <code>com.school.abstraction</code> package.</li>
+      <li>Each test class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">Abstraction/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/abstraction/</span>
+        ├── <span class="file">Shape.java</span>
+        ├── <span class="file">Circle.java</span>
+        ├── <span class="file">Rectangle.java</span>
+        ├── <span class="file">TestShape.java</span>
+        ├── <span class="file">Playable.java</span>
+        ├── <span class="file">Guitar.java</span>
+        ├── <span class="file">Piano.java</span>
+        ├── <span class="file">TestPlayable.java</span>
+        ├── <span class="file">Loggable.java</span>
+        ├── <span class="file">FileLogger.java</span>
+        ├── <span class="file">ConsoleLogger.java</span>
+        ├── <span class="file">TestLoggable.java</span>
+        ├── <span class="file">Validator.java</span>
+        ├── <span class="file">EmailValidator.java</span>
+        ├── <span class="file">AgeValidator.java</span>
+        ├── <span class="file">TestValidator.java</span>
+        ├── <span class="file">Animal.java</span>
+        ├── <span class="file">Swimmable.java</span>
+        ├── <span class="file">Flyable.java</span>
+        ├── <span class="file">Duck.java</span>
+        ├── <span class="file">Eagle.java</span>
+        ├── <span class="file">Fish.java</span>
+        ├── <span class="file">TestAnimal.java</span>
+        ├── <span class="file">Vehicle.java</span>
+        ├── <span class="file">Chargeable.java</span>
+        ├── <span class="file">GasCar.java</span>
+        ├── <span class="file">ElectricCar.java</span>
+        ├── <span class="file">TestVehicle.java</span>
+        ├── <span class="file">Printable.java</span>
+        ├── <span class="file">Saveable.java</span>
+        ├── <span class="file">Report.java</span>
+        ├── <span class="file">TestReport.java</span>
+        ├── <span class="file">PaymentProcessor.java</span>
+        ├── <span class="file">CreditCardPayment.java</span>
+        ├── <span class="file">GCashPayment.java</span>
+        ├── <span class="file">TestPayment.java</span>
+        ├── <span class="file">Employee.java</span>
+        ├── <span class="file">Billable.java</span>
+        ├── <span class="file">Trackable.java</span>
+        ├── <span class="file">FullTimeEmployee.java</span>
+        ├── <span class="file">Freelancer.java</span>
+        └── <span class="file">TestEmployee.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Abstract class basics — Shape</span>
+      <span class="tag tag-abstract">Abstract class</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>abstract class</strong> named <code>Shape</code> with:</p>
+      <ul>
+        <li>Field: <code>String color;</code></li>
+        <li>A constructor that accepts color.</li>
+        <li><strong>Abstract methods</strong> (no body): <code>public abstract double getArea();</code> and <code>public abstract double getPerimeter();</code></li>
+        <li>A <strong>concrete method</strong>: <code>public void displayInfo()</code> — prints color, area, and perimeter (calls the abstract methods)</li>
+      </ul>
+      <p>Create <code>Circle</code> extends <code>Shape</code> with field <code>double radius;</code>. Implement both abstract methods.</p>
+      <p>Create <code>Rectangle</code> extends <code>Shape</code> with fields <code>double width;</code> and <code>double height;</code>. Implement both abstract methods.</p>
+      <p>Create <code>TestShape</code>. Try to instantiate <code>Shape</code> directly — write the error as a comment. Then create Circle and Rectangle objects and call <code>displayInfo()</code>.</p>
+      <div class="error-output">// Shape s = new Shape("Red"); → ERROR: Shape is abstract; cannot be instantiated</div>
+      <div class="expected-output">--- Circle ---
+Color: Red
+Area: 78.54
+Perimeter: 31.42
+
+--- Rectangle ---
+Color: Blue
+Area: 40.00
+Perimeter: 26.00</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> An abstract class cannot be instantiated directly. It defines a contract (abstract methods) that child classes <strong>must</strong> implement. The concrete method <code>displayInfo()</code> works because it calls the implemented versions at runtime.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">Basic interface — Playable</span>
+      <span class="tag tag-interface">Interface</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>interface</strong> named <code>Playable</code> with:</p>
+      <ul>
+        <li><code>void play();</code> — abstract (no body)</li>
+        <li><code>void stop();</code> — abstract</li>
+        <li><code>String getInstrumentName();</code> — abstract</li>
+      </ul>
+      <p>Create <code>Guitar</code> that <strong>implements</strong> <code>Playable</code>:</p>
+      <ul>
+        <li>Field: <code>String type;</code> (e.g. "Acoustic", "Electric")</li>
+        <li>Implement all three methods.</li>
+      </ul>
+      <p>Create <code>Piano</code> that <strong>implements</strong> <code>Playable</code>:</p>
+      <ul>
+        <li>Field: <code>int keys;</code></li>
+        <li>Implement all three methods.</li>
+      </ul>
+      <p>Create <code>TestPlayable</code>. Create both, store in a <code>Playable[]</code> array, and loop through.</p>
+      <div class="expected-output">Playing Acoustic Guitar — strumming chords...
+Playing Piano (88 keys) — pressing keys...
+
+Stopping Acoustic Guitar.
+Stopping Piano.</div>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">Interface with default method — Loggable</span>
+      <span class="tag tag-interface">Interface</span>
+      <span class="tag tag-default-method">default method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>interface</strong> named <code>Loggable</code> with:</p>
+      <ul>
+        <li><code>void log(String message);</code> — abstract</li>
+        <li><code>default void logInfo(String message)</code> — prints <code>"[INFO] " + message</code></li>
+        <li><code>default void logWarning(String message)</code> — prints <code>"[WARNING] " + message</code></li>
+        <li><code>default void logError(String message)</code> — prints <code>"[ERROR] " + message</code></li>
+      </ul>
+      <p>Create <code>FileLogger</code> that implements <code>Loggable</code>:</p>
+      <ul>
+        <li>Implement <code>log()</code> — prints <code>"[FILE] " + message</code></li>
+      </ul>
+      <p>Create <code>ConsoleLogger</code> that implements <code>Loggable</code>:</p>
+      <ul>
+        <li>Implement <code>log()</code> — prints <code>"[CONSOLE] " + message</code></li>
+        <li><strong>Override</strong> <code>logError()</code> — prints <code>"!!! CONSOLE ERROR: " + message + " !!!"</code></li>
+      </ul>
+      <p>Create <code>TestLoggable</code>. Test both loggers using both the abstract and default methods.</p>
+      <div class="expected-output">--- FileLogger ---
+[FILE] System started.
+[INFO] All services running.
+[WARNING] Disk space low.
+[ERROR] Connection timeout.
+
+--- ConsoleLogger ---
+[CONSOLE] System started.
+[INFO] All services running.
+[WARNING] Disk space low.
+!!! CONSOLE ERROR: Connection timeout. !!!</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>default</code> methods in interfaces provide a body that implementing classes inherit automatically. Classes can optionally override them. This lets you add new methods to an interface without breaking existing implementations.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">Interface with static method — Validator</span>
+      <span class="tag tag-interface">Interface</span>
+      <span class="tag tag-static-method">static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>interface</strong> named <code>Validator</code> with:</p>
+      <ul>
+        <li><code>boolean validate(String input);</code> — abstract</li>
+        <li><code>String getValidationType();</code> — abstract</li>
+        <li><code>static void printResult(String type, String input, boolean result)</code> — a <strong>static</strong> helper method that prints: <code>"[type] 'input' → VALID"</code> or <code>"→ INVALID"</code></li>
+        <li><code>default void validateAndPrint(String input)</code> — a <strong>default</strong> method that calls <code>validate()</code> and then calls the static <code>printResult()</code></li>
+      </ul>
+      <p>Create <code>EmailValidator</code> that implements <code>Validator</code>:</p>
+      <ul>
+        <li><code>validate()</code> — returns <code>true</code> if input contains <code>"@"</code> and <code>"."</code></li>
+        <li><code>getValidationType()</code> — returns <code>"Email"</code></li>
+      </ul>
+      <p>Create <code>AgeValidator</code> that implements <code>Validator</code>:</p>
+      <ul>
+        <li><code>validate()</code> — parse input as int, return true if between 0 and 150. Use try-catch for non-numeric input.</li>
+        <li><code>getValidationType()</code> — returns <code>"Age"</code></li>
+      </ul>
+      <p>Create <code>TestValidator</code>. Test both validators using the default <code>validateAndPrint()</code> and also call the static method directly.</p>
+      <div class="expected-output">--- Email validation ---
+[Email] 'alice@email.com' → VALID
+[Email] 'not-an-email' → INVALID
+[Email] 'bob@test.org' → VALID
+
+--- Age validation ---
+[Age] '25' → VALID
+[Age] '-5' → INVALID
+[Age] 'abc' → INVALID
+[Age] '150' → VALID
+
+--- Using static method directly ---
+[Custom] 'test' → VALID</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>static</code> methods in interfaces belong to the interface itself, not to implementing classes. They are called via <code>Validator.printResult(...)</code> — never through an object. Useful for helper/utility methods related to the interface's purpose.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">Abstract class + multiple interfaces — Animal</span>
+      <span class="tag tag-abstract">Abstract class</span>
+      <span class="tag tag-interface">Interface</span>
+      <span class="tag tag-multi">Multiple interfaces</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>abstract class</strong> <code>Animal</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>String species;</code></li>
+        <li>A constructor, and abstract method: <code>public abstract void makeSound();</code></li>
+        <li>Concrete method: <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create an <strong>interface</strong> <code>Swimmable</code> with:</p>
+      <ul>
+        <li><code>void swim();</code></li>
+        <li><code>default int getMaxDepthMeters()</code> — returns <code>10</code></li>
+      </ul>
+      <p>Create an <strong>interface</strong> <code>Flyable</code> with:</p>
+      <ul>
+        <li><code>void fly();</code></li>
+        <li><code>default int getMaxAltitudeMeters()</code> — returns <code>1000</code></li>
+      </ul>
+      <p>Create <code>Duck</code> extends <code>Animal</code> implements <code>Swimmable, Flyable</code> — implements all methods.</p>
+      <p>Create <code>Eagle</code> extends <code>Animal</code> implements <code>Flyable</code> — override <code>getMaxAltitudeMeters()</code> to return <code>3000</code>.</p>
+      <p>Create <code>Fish</code> extends <code>Animal</code> implements <code>Swimmable</code> — override <code>getMaxDepthMeters()</code> to return <code>200</code>.</p>
+      <p>Create <code>TestAnimal</code>. Create all three, demonstrate their abilities.</p>
+      <div class="expected-output">--- Duck ---
+Name: Donald, Species: Duck
+Quack quack!
+Donald is swimming. Max depth: 10m
+Donald is flying. Max altitude: 1000m
+
+--- Eagle ---
+Name: Aguila, Species: Eagle
+Screech!
+Aguila is flying. Max altitude: 3000m
+
+--- Fish ---
+Name: Nemo, Species: Clownfish
+Blub blub!
+Nemo is swimming. Max depth: 200m</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> A class can extend <strong>one</strong> abstract class and implement <strong>multiple</strong> interfaces. Duck gets its data from Animal and its behaviors from Swimmable and Flyable. This is how Java achieves a form of multiple inheritance.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Abstract class + interface — Vehicle</span>
+      <span class="tag tag-abstract">Abstract class</span>
+      <span class="tag tag-interface">Interface</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>abstract class</strong> <code>Vehicle</code> with:</p>
+      <ul>
+        <li>Fields: <code>String brand;</code>, <code>double price;</code>, <code>int fuelLevel;</code> (0–100)</li>
+        <li>A constructor.</li>
+        <li>Abstract methods: <code>public abstract void drive();</code> and <code>public abstract String getFuelType();</code></li>
+        <li>Concrete method: <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create an <strong>interface</strong> <code>Chargeable</code> with:</p>
+      <ul>
+        <li><code>void charge();</code> — abstract</li>
+        <li><code>default int getChargingTimeMinutes()</code> — returns <code>120</code></li>
+        <li><code>static String getChargingStandard()</code> — returns <code>"CCS Type 2"</code></li>
+      </ul>
+      <p>Create <code>GasCar</code> extends <code>Vehicle</code>:</p>
+      <ul>
+        <li>Implements drive and getFuelType ("Gasoline").</li>
+        <li>A method: <code>public void refuel()</code> — sets fuel to 100.</li>
+      </ul>
+      <p>Create <code>ElectricCar</code> extends <code>Vehicle</code> implements <code>Chargeable</code>:</p>
+      <ul>
+        <li>Implements drive and getFuelType ("Electric").</li>
+        <li>Implements <code>charge()</code> — sets fuel to 100.</li>
+        <li>Override <code>getChargingTimeMinutes()</code> — returns <code>45</code> (fast charger).</li>
+      </ul>
+      <p>Create <code>TestVehicle</code>. Test both types, and call the static interface method.</p>
+      <div class="expected-output">--- Gas Car ---
+Brand: Toyota, Price: 950000.0, Fuel: Gasoline
+Fuel level: 50%
+Driving... Fuel level: 30%
+Refueling... Fuel level: 100%
+
+--- Electric Car ---
+Brand: Tesla, Price: 2500000.0, Fuel: Electric
+Fuel level: 40%
+Driving... Fuel level: 20%
+Charging... Fuel level: 100%
+Charging time: 45 minutes
+
+Charging standard: CCS Type 2</div>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">Multiple interfaces — Report</span>
+      <span class="tag tag-interface">Interface</span>
+      <span class="tag tag-multi">Multiple interfaces</span>
+      <span class="tag tag-default-method">default method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>interface</strong> <code>Printable</code> with:</p>
+      <ul>
+        <li><code>void print();</code> — abstract</li>
+        <li><code>default void printHeader()</code> — prints <code>"====== REPORT ======"</code></li>
+        <li><code>default void printFooter()</code> — prints <code>"====== END ======"</code></li>
+      </ul>
+      <p>Create an <strong>interface</strong> <code>Saveable</code> with:</p>
+      <ul>
+        <li><code>void save(String filename);</code> — abstract</li>
+        <li><code>static String getDefaultPath()</code> — returns <code>"/documents/reports/"</code></li>
+        <li><code>default void autoSave()</code> — prints <code>"Auto-saving to " + getDefaultPath() + "autosave.txt"</code></li>
+      </ul>
+      <p>Create <code>Report</code> that implements <strong>both</strong> <code>Printable</code> and <code>Saveable</code>:</p>
+      <ul>
+        <li>Fields: <code>String title;</code>, <code>String content;</code>, <code>String author;</code></li>
+        <li>A constructor for all fields.</li>
+        <li>Implement <code>print()</code> — calls <code>printHeader()</code>, prints title/author/content, calls <code>printFooter()</code></li>
+        <li>Implement <code>save(String filename)</code> — prints <code>"Saving report to [filename]..."</code></li>
+      </ul>
+      <p>Create <code>TestReport</code>. Create a Report, print it, save it, and use autoSave.</p>
+      <div class="expected-output">====== REPORT ======
+Title: Monthly Sales
+Author: Maria Santos
+Content: Sales increased by 15% this quarter.
+====== END ======
+
+Saving report to monthly_sales.pdf...
+Auto-saving to /documents/reports/autosave.txt
+Default path: /documents/reports/</div>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Abstract class with template method — PaymentProcessor</span>
+      <span class="tag tag-abstract">Abstract class</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>abstract class</strong> <code>PaymentProcessor</code> with:</p>
+      <ul>
+        <li>Fields: <code>String payerName;</code> and <code>double amount;</code></li>
+        <li>A constructor for both fields.</li>
+        <li>Abstract methods: <code>protected abstract boolean authorize();</code> and <code>protected abstract void executePayment();</code> and <code>public abstract String getPaymentMethod();</code></li>
+        <li>A <strong>concrete template method</strong>: <code>public final void processPayment()</code> that:
+          <ol>
+            <li>Prints <code>"Processing [method] payment of [amount] for [payerName]..."</code></li>
+            <li>Calls <code>authorize()</code> — if false, print error and return</li>
+            <li>Calls <code>executePayment()</code></li>
+            <li>Prints <code>"Payment successful!"</code></li>
+          </ol>
+        </li>
+      </ul>
+      <p>Create <code>CreditCardPayment</code> extends <code>PaymentProcessor</code>:</p>
+      <ul>
+        <li>Field: <code>String cardNumber;</code></li>
+        <li><code>authorize()</code> — returns true if card number length is 16</li>
+        <li><code>executePayment()</code> — prints <code>"Charged to card ending in [last 4 digits]."</code></li>
+      </ul>
+      <p>Create <code>GCashPayment</code> extends <code>PaymentProcessor</code>:</p>
+      <ul>
+        <li>Field: <code>String phoneNumber;</code></li>
+        <li><code>authorize()</code> — returns true if phone number starts with "09" and length is 11</li>
+        <li><code>executePayment()</code> — prints <code>"Sent to GCash [phoneNumber]."</code></li>
+      </ul>
+      <p>Create <code>TestPayment</code>. Test valid and invalid payments.</p>
+      <div class="expected-output">--- Credit Card Payment ---
+Processing Credit Card payment of 1500.0 for Alice...
+Authorizing...
+Charged to card ending in 5678.
+Payment successful!
+
+--- GCash Payment ---
+Processing GCash payment of 850.0 for Bob...
+Authorizing...
+Sent to GCash 09171234567.
+Payment successful!
+
+--- Invalid Credit Card ---
+Processing Credit Card payment of 500.0 for Charlie...
+Authorizing...
+Authorization failed. Payment cancelled.</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> The <strong>template method pattern</strong> — <code>processPayment()</code> is a <code>final</code> concrete method that defines the overall steps, while subclasses fill in the details via abstract methods. The flow is fixed; the implementation varies.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">Polymorphism with interfaces — Billable &amp; Trackable</span>
+      <span class="tag tag-interface">Interface</span>
+      <span class="tag tag-poly">Polymorphism</span>
+      <span class="tag tag-default-method">default method</span>
+      <span class="tag tag-static-method">static method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create an <strong>interface</strong> <code>Billable</code> with:</p>
+      <ul>
+        <li><code>double calculateBill();</code> — abstract</li>
+        <li><code>String getBillingType();</code> — abstract</li>
+        <li><code>default String formatBill()</code> — returns <code>"[type]: PHP " + String.format("%.2f", calculateBill())</code></li>
+        <li><code>static double calculateTax(double amount, double rate)</code> — returns <code>amount * rate</code></li>
+      </ul>
+      <p>Create an <strong>interface</strong> <code>Trackable</code> with:</p>
+      <ul>
+        <li><code>int getHoursWorked();</code> — abstract</li>
+        <li><code>default String getProductivityLevel()</code> — returns "High" if hours &ge; 160, "Normal" if &ge; 120, otherwise "Low"</li>
+      </ul>
+      <p>Create an <strong>abstract class</strong> <code>Employee</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>int id;</code></li>
+        <li>A constructor and <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>FullTimeEmployee</code> extends <code>Employee</code> implements <code>Billable, Trackable</code>:</p>
+      <ul>
+        <li>Fields: <code>double monthlySalary;</code> and <code>int hoursWorked;</code></li>
+        <li><code>calculateBill()</code> — returns <code>monthlySalary</code></li>
+        <li><code>getBillingType()</code> — returns <code>"Monthly Salary"</code></li>
+      </ul>
+      <p>Create <code>Freelancer</code> extends <code>Employee</code> implements <code>Billable, Trackable</code>:</p>
+      <ul>
+        <li>Fields: <code>double hourlyRate;</code> and <code>int hoursWorked;</code></li>
+        <li><code>calculateBill()</code> — returns <code>hourlyRate * hoursWorked</code></li>
+        <li><code>getBillingType()</code> — returns <code>"Hourly Rate"</code></li>
+      </ul>
+      <p>Create <code>TestEmployee</code>. Create both, store in a <code>Billable[]</code> array and a <code>Trackable[]</code> array, and loop through each.</p>
+      <div class="expected-output">--- Billing ---
+Monthly Salary: PHP 55000.00
+Hourly Rate: PHP 48000.00
+
+--- Productivity ---
+Alice (160 hrs): High
+Bob (120 hrs): Normal
+
+--- Tax calculation (static method) ---
+Tax on 55000.0 at 12%: 6600.00
+Tax on 48000.0 at 10%: 4800.00</div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — School management</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>This capstone exercise combines abstract classes, interfaces (with default and static methods), polymorphism, and instanceof.</p>
+      <p>You will reuse and extend the classes from Exercise 09. In <code>TestEmployee</code>, add the following after your existing code (or create a separate section):</p>
+      <ol>
+        <li>Create an array: <code>Employee[] team = { fullTimeEmployee, freelancer };</code></li>
+        <li>Loop through the array. For each employee:
+          <ul>
+            <li>Call <code>displayInfo()</code> (inherited from Employee).</li>
+            <li>Use <code>instanceof Billable</code> to check and call <code>formatBill()</code>.</li>
+            <li>Use <code>instanceof Trackable</code> to check and call <code>getProductivityLevel()</code>.</li>
+          </ul>
+        </li>
+        <li>Compute the <strong>total payroll</strong> by looping through <code>Billable[]</code> and summing <code>calculateBill()</code>.</li>
+        <li>Compute <strong>total tax</strong> using <code>Billable.calculateTax(totalPayroll, 0.12)</code>.</li>
+        <li>Print a full summary report.</li>
+      </ol>
+      <div class="expected-output">========================================
+       TEAM SUMMARY REPORT
+========================================
+
+[ID: 1] Alice Santos
+  Type: Full-Time Employee
+  Monthly Salary: PHP 55000.00
+  Hours: 160 | Productivity: High
+
+[ID: 2] Bob Garcia
+  Type: Freelancer
+  Hourly Rate: PHP 400.00 x 120 hrs = PHP 48000.00
+  Hours: 120 | Productivity: Normal
+
+========================================
+Total payroll: PHP 103000.00
+Tax (12%): PHP 12360.00
+Net payroll: PHP 90640.00
+========================================</div>
+      <div class="note-box">
+        <strong>Key takeaway:</strong> This exercise shows how abstract classes (shared data + structure), interfaces (shared behavior contracts), default methods (reusable implementations), static methods (utility functions), and polymorphism (one array, different types) all work together in a real-world scenario.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all classes compile and run without errors.</li>
+      <li>Make sure every class/interface is inside the <code>com.school.abstraction</code> package.</li>
+      <li>Compress your entire <code>Abstraction</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabTwelve-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabTwelve-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class/interface must have the correct package declaration: <code>package com.school.abstraction;</code><br>
+    &bull; Class and interface names must match exactly (case-sensitive).<br>
+    &bull; Use <code>@Override</code> annotation on every overridden/implemented method.
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Abstraction (Abstract Classes &amp; Interfaces) &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

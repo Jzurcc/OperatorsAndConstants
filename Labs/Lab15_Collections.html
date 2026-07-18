@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Collections (List, Set &amp; Map)</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --tag-pink-bg: #FBEAF0;
+    --tag-pink-text: #72243E;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-list { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-set { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-map { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-iterate { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-sort { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-mixed { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Collections — List, Set &amp; Map</h1>
+    <div class="header-sub">
+      This exercise covers the three core Java Collection types: <strong>List</strong> (ordered, allows duplicates),
+      <strong>Set</strong> (unordered, no duplicates), and <strong>Map</strong> (key-value pairs).
+      You will use <code>ArrayList</code>, <code>LinkedList</code>, <code>HashSet</code>, <code>TreeSet</code>,
+      <code>HashMap</code>, <code>TreeMap</code>, and practice iterating, sorting, and combining them.
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Intermediate</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabFifteen-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">List, Set, Map, Iterator</div></div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>Interface</th>
+        <th>Implementation</th>
+        <th>Ordered?</th>
+        <th>Duplicates?</th>
+        <th>Key feature</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td rowspan="2"><strong>List</strong></td>
+        <td><code>ArrayList</code></td>
+        <td>Yes (by index)</td>
+        <td>Yes</td>
+        <td>Fast random access, most commonly used</td>
+      </tr>
+      <tr>
+        <td><code>LinkedList</code></td>
+        <td>Yes (by index)</td>
+        <td>Yes</td>
+        <td>Fast insert/remove at beginning or middle</td>
+      </tr>
+      <tr>
+        <td rowspan="2"><strong>Set</strong></td>
+        <td><code>HashSet</code></td>
+        <td>No</td>
+        <td>No</td>
+        <td>Fastest lookups, no ordering</td>
+      </tr>
+      <tr>
+        <td><code>TreeSet</code></td>
+        <td>Yes (sorted)</td>
+        <td>No</td>
+        <td>Automatically sorted</td>
+      </tr>
+      <tr>
+        <td rowspan="2"><strong>Map</strong></td>
+        <td><code>HashMap</code></td>
+        <td>No</td>
+        <td>Keys: No / Values: Yes</td>
+        <td>Fastest key-value lookups</td>
+      </tr>
+      <tr>
+        <td><code>TreeMap</code></td>
+        <td>Yes (by key)</td>
+        <td>Keys: No / Values: Yes</td>
+        <td>Keys automatically sorted</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note-box">
+    <strong>Import reminder:</strong> All collection classes are in the <code>java.util</code> package. Add these imports at the top of each file as needed:<br>
+    <code>import java.util.ArrayList;</code>&nbsp;
+    <code>import java.util.LinkedList;</code>&nbsp;
+    <code>import java.util.HashSet;</code>&nbsp;
+    <code>import java.util.TreeSet;</code>&nbsp;
+    <code>import java.util.HashMap;</code>&nbsp;
+    <code>import java.util.TreeMap;</code>&nbsp;
+    <code>import java.util.Collections;</code>&nbsp;
+    <code>import java.util.Iterator;</code>&nbsp;
+    <code>import java.util.Map;</code>
+  </div>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>Collections</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.collections</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class file specified inside the <code>com.school.collections</code> package.</li>
+      <li>Each class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">Collections/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/collections/</span>
+        ├── <span class="file">ArrayListBasics.java</span>
+        ├── <span class="file">LinkedListDemo.java</span>
+        ├── <span class="file">ListIteration.java</span>
+        ├── <span class="file">HashSetBasics.java</span>
+        ├── <span class="file">TreeSetDemo.java</span>
+        ├── <span class="file">HashMapBasics.java</span>
+        ├── <span class="file">TreeMapDemo.java</span>
+        ├── <span class="file">MapIteration.java</span>
+        ├── <span class="file">ListSetMapCompare.java</span>
+        └── <span class="file">StudentRegistry.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">ArrayList basics</span>
+      <span class="tag tag-list">List</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ArrayListBasics</code>.</p>
+      <p>Inside <code>main</code>, create an <code>ArrayList&lt;String&gt;</code> named <code>fruits</code> and demonstrate the following operations:</p>
+      <ol>
+        <li><strong>Add</strong> 5 fruits: "Mango", "Apple", "Banana", "Cherry", "Apple" (note the duplicate).</li>
+        <li><strong>Print</strong> the list and its size.</li>
+        <li><strong>Access</strong> element at index 2 using <code>get()</code>.</li>
+        <li><strong>Update</strong> index 1 to "Avocado" using <code>set()</code>.</li>
+        <li><strong>Remove</strong> "Cherry" using <code>remove(Object)</code>.</li>
+        <li><strong>Check</strong> if "Mango" exists using <code>contains()</code>.</li>
+        <li><strong>Find</strong> the index of "Banana" using <code>indexOf()</code>.</li>
+        <li><strong>Sort</strong> the list using <code>Collections.sort()</code>.</li>
+        <li><strong>Print</strong> the final list.</li>
+      </ol>
+      <div class="expected-output">Original: [Mango, Apple, Banana, Cherry, Apple]
+Size: 5
+Element at index 2: Banana
+After set(1, "Avocado"): [Mango, Avocado, Banana, Cherry, Apple]
+After remove("Cherry"): [Mango, Avocado, Banana, Apple]
+Contains "Mango"? true
+Index of "Banana": 2
+After sort: [Apple, Avocado, Banana, Mango]</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>ArrayList</code> maintains insertion order, allows duplicates, and provides index-based access. Unlike arrays, it grows and shrinks dynamically.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">LinkedList — Queue-like behavior</span>
+      <span class="tag tag-list">List</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>LinkedListDemo</code>.</p>
+      <p>Inside <code>main</code>, create a <code>LinkedList&lt;String&gt;</code> named <code>queue</code> and demonstrate:</p>
+      <ol>
+        <li>Add elements using <code>add()</code>: "Task A", "Task B", "Task C".</li>
+        <li>Add to the <strong>front</strong> using <code>addFirst("Urgent Task")</code>.</li>
+        <li>Add to the <strong>end</strong> using <code>addLast("Low Priority")</code>.</li>
+        <li>Print the list.</li>
+        <li><strong>Peek</strong> at the first element using <code>getFirst()</code> (does not remove).</li>
+        <li><strong>Peek</strong> at the last element using <code>getLast()</code>.</li>
+        <li><strong>Remove</strong> the first element using <code>removeFirst()</code> — simulates dequeue.</li>
+        <li><strong>Remove</strong> the last element using <code>removeLast()</code>.</li>
+        <li>Print the final list.</li>
+      </ol>
+      <div class="expected-output">Queue: [Urgent Task, Task A, Task B, Task C, Low Priority]
+Size: 5
+First: Urgent Task
+Last: Low Priority
+Removed first: Urgent Task
+Removed last: Low Priority
+Final queue: [Task A, Task B, Task C]</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>LinkedList</code> implements both <code>List</code> and <code>Deque</code> interfaces. Its <code>addFirst()</code>, <code>addLast()</code>, <code>removeFirst()</code>, <code>removeLast()</code> make it ideal for queue and stack behavior.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">List iteration — Four ways</span>
+      <span class="tag tag-list">List</span>
+      <span class="tag tag-iterate">Iteration</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ListIteration</code>.</p>
+      <p>Inside <code>main</code>, create an <code>ArrayList&lt;Integer&gt;</code> with values: 10, 20, 30, 40, 50.</p>
+      <p>Print the list using <strong>four different methods</strong>:</p>
+      <ol>
+        <li><strong>For loop</strong> with index: <code>for (int i = 0; i &lt; list.size(); i++)</code></li>
+        <li><strong>Enhanced for loop</strong>: <code>for (int num : list)</code></li>
+        <li><strong>Iterator</strong>: <code>Iterator&lt;Integer&gt; it = list.iterator();</code> with <code>while (it.hasNext())</code></li>
+        <li><strong>forEach with lambda</strong>: <code>list.forEach(num -&gt; System.out.println(num));</code></li>
+      </ol>
+      <p>Then demonstrate <strong>removing while iterating</strong>: use an Iterator to remove all even numbers. Print the result.</p>
+      <div class="expected-output">--- 1. For loop ---
+Index 0: 10
+Index 1: 20
+Index 2: 30
+Index 3: 40
+Index 4: 50
+
+--- 2. Enhanced for loop ---
+10 20 30 40 50
+
+--- 3. Iterator ---
+10 20 30 40 50
+
+--- 4. forEach lambda ---
+10 20 30 40 50
+
+--- Removing even numbers with Iterator ---
+Before: [10, 20, 30, 40, 50]
+After: [30, 50]</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Use <code>Iterator.remove()</code> to safely remove elements during iteration. Using <code>list.remove()</code> inside a for-each loop causes <code>ConcurrentModificationException</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">HashSet — No duplicates</span>
+      <span class="tag tag-set">Set</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>HashSetBasics</code>.</p>
+      <p>Inside <code>main</code>:</p>
+      <ol>
+        <li>Create a <code>HashSet&lt;String&gt;</code> named <code>emails</code>.</li>
+        <li>Add: "alice@email.com", "bob@email.com", "charlie@email.com", "alice@email.com" (duplicate), "bob@email.com" (duplicate).</li>
+        <li>Print the set and its size — observe that duplicates are automatically ignored.</li>
+        <li>Check if "alice@email.com" exists using <code>contains()</code>.</li>
+        <li>Remove "charlie@email.com".</li>
+        <li>Print the final set.</li>
+        <li>Create a second <code>HashSet&lt;String&gt;</code> with "bob@email.com", "diana@email.com", "edward@email.com".</li>
+        <li>Demonstrate <strong>union</strong>: <code>addAll()</code> — combine both sets.</li>
+        <li>Demonstrate <strong>intersection</strong>: <code>retainAll()</code> — keep only common elements. (Use copies to avoid modifying originals.)</li>
+      </ol>
+      <div class="expected-output">Emails: [bob@email.com, alice@email.com, charlie@email.com]
+Size: 3 (duplicates ignored)
+Contains alice@email.com? true
+After remove: [bob@email.com, alice@email.com]
+
+Set 2: [bob@email.com, edward@email.com, diana@email.com]
+
+Union: [bob@email.com, alice@email.com, edward@email.com, diana@email.com]
+Intersection: [bob@email.com]</div>
+      <p><em>Note: HashSet order may vary — that's normal.</em></p>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">TreeSet — Sorted and unique</span>
+      <span class="tag tag-set">Set</span>
+      <span class="tag tag-sort">Sorted</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>TreeSetDemo</code>.</p>
+      <p>Inside <code>main</code>:</p>
+      <ol>
+        <li>Create a <code>TreeSet&lt;Integer&gt;</code> named <code>scores</code>.</li>
+        <li>Add: 88, 72, 95, 88, 65, 100, 72, 81.</li>
+        <li>Print the set — observe: no duplicates, automatically sorted ascending.</li>
+        <li>Print <code>first()</code> (lowest) and <code>last()</code> (highest).</li>
+        <li>Print <code>headSet(85)</code> — all elements <strong>less than</strong> 85.</li>
+        <li>Print <code>tailSet(85)</code> — all elements <strong>greater than or equal to</strong> 85.</li>
+        <li>Print <code>subSet(70, 90)</code> — elements between 70 (inclusive) and 90 (exclusive).</li>
+      </ol>
+      <p>Then create a <code>TreeSet&lt;String&gt;</code> with names and print it — observe alphabetical sorting.</p>
+      <div class="expected-output">Scores: [65, 72, 81, 88, 95, 100]
+Size: 6 (8 added, 2 duplicates removed)
+Lowest: 65
+Highest: 100
+Scores below 85: [65, 72, 81]
+Scores 85 and above: [88, 95, 100]
+Scores between 70 and 90: [72, 81, 88]
+
+Names: [Alice, Bob, Charlie, Diana, Edward]</div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">HashMap basics</span>
+      <span class="tag tag-map">Map</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>HashMapBasics</code>.</p>
+      <p>Inside <code>main</code>, create a <code>HashMap&lt;String, Integer&gt;</code> named <code>scores</code> (student name → score):</p>
+      <ol>
+        <li><strong>Put</strong> entries: "Alice" → 92, "Bob" → 78, "Charlie" → 85, "Diana" → 90.</li>
+        <li><strong>Print</strong> the map and its size.</li>
+        <li><strong>Get</strong> Alice's score using <code>get("Alice")</code>.</li>
+        <li><strong>Check</strong> if "Edward" exists using <code>containsKey()</code>.</li>
+        <li><strong>Check</strong> if score 85 exists using <code>containsValue()</code>.</li>
+        <li><strong>Update</strong> Bob's score to 88 using <code>put()</code> (same key overwrites).</li>
+        <li><strong>Remove</strong> Charlie using <code>remove("Charlie")</code>.</li>
+        <li>Use <code>getOrDefault("Edward", 0)</code> for a missing key.</li>
+        <li>Use <code>putIfAbsent("Edward", 75)</code> — only adds if key doesn't exist.</li>
+        <li><strong>Print</strong> the final map.</li>
+      </ol>
+      <div class="expected-output">Scores: {Alice=92, Bob=78, Charlie=85, Diana=90}
+Size: 4
+Alice's score: 92
+Contains "Edward"? false
+Contains value 85? true
+After update Bob: {Alice=92, Bob=88, Charlie=85, Diana=90}
+After remove Charlie: {Alice=92, Bob=88, Diana=90}
+Edward's score (default): 0
+After putIfAbsent Edward: {Alice=92, Bob=88, Diana=90, Edward=75}</div>
+      <p><em>Note: HashMap order may vary — that's normal.</em></p>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">TreeMap — Sorted keys</span>
+      <span class="tag tag-map">Map</span>
+      <span class="tag tag-sort">Sorted</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>TreeMapDemo</code>.</p>
+      <p>Inside <code>main</code>, create a <code>TreeMap&lt;String, Double&gt;</code> named <code>products</code> (product name → price):</p>
+      <ol>
+        <li>Put: "Laptop" → 45999.0, "Mouse" → 599.0, "Keyboard" → 1299.0, "Monitor" → 12500.0, "Headset" → 2499.0.</li>
+        <li>Print the map — observe keys are sorted alphabetically.</li>
+        <li>Print <code>firstKey()</code> and <code>lastKey()</code>.</li>
+        <li>Print <code>headMap("Laptop")</code> — all entries before "Laptop".</li>
+        <li>Print <code>tailMap("Laptop")</code> — "Laptop" and everything after.</li>
+        <li>Compute and print the <strong>total price</strong> of all products by looping through values.</li>
+      </ol>
+      <div class="expected-output">Products (sorted by name):
+  Headset: 2499.0
+  Keyboard: 1299.0
+  Laptop: 45999.0
+  Monitor: 12500.0
+  Mouse: 599.0
+
+First key: Headset
+Last key: Mouse
+Before "Laptop": {Headset=2499.0, Keyboard=1299.0}
+"Laptop" and after: {Laptop=45999.0, Monitor=12500.0, Mouse=599.0}
+Total price: 62896.0</div>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Map iteration — Three ways</span>
+      <span class="tag tag-map">Map</span>
+      <span class="tag tag-iterate">Iteration</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>MapIteration</code>.</p>
+      <p>Inside <code>main</code>, create a <code>HashMap&lt;String, String&gt;</code> named <code>capitals</code> with at least 5 country-capital pairs.</p>
+      <p>Iterate and print using <strong>three different methods</strong>:</p>
+      <ol>
+        <li><strong>entrySet()</strong>: <code>for (Map.Entry&lt;String, String&gt; entry : capitals.entrySet())</code> — access <code>entry.getKey()</code> and <code>entry.getValue()</code></li>
+        <li><strong>keySet()</strong>: <code>for (String country : capitals.keySet())</code> — use key to get value</li>
+        <li><strong>forEach lambda</strong>: <code>capitals.forEach((country, capital) -&gt; ...)</code></li>
+      </ol>
+      <p>Then demonstrate:</p>
+      <ul>
+        <li>Print all <strong>keys only</strong> using <code>keySet()</code>.</li>
+        <li>Print all <strong>values only</strong> using <code>values()</code>.</li>
+      </ul>
+      <div class="expected-output">--- 1. entrySet() ---
+Philippines → Manila
+Japan → Tokyo
+South Korea → Seoul
+Thailand → Bangkok
+Vietnam → Hanoi
+
+--- 2. keySet() ---
+Philippines → Manila
+Japan → Tokyo
+South Korea → Seoul
+Thailand → Bangkok
+Vietnam → Hanoi
+
+--- 3. forEach lambda ---
+Philippines → Manila
+Japan → Tokyo
+South Korea → Seoul
+Thailand → Bangkok
+Vietnam → Hanoi
+
+Keys: [Philippines, Japan, South Korea, Thailand, Vietnam]
+Values: [Manila, Tokyo, Seoul, Bangkok, Hanoi]</div>
+      <p><em>Note: HashMap order may vary.</em></p>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">List vs Set vs Map — Side by side</span>
+      <span class="tag tag-list">List</span>
+      <span class="tag tag-set">Set</span>
+      <span class="tag tag-map">Map</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ListSetMapCompare</code>.</p>
+      <p>Inside <code>main</code>, start with this array of names (with duplicates):</p>
+      <ul>
+        <li><code>String[] names = {"Alice", "Bob", "Charlie", "Alice", "Diana", "Bob", "Edward", "Charlie"};</code></li>
+      </ul>
+      <p>Do the following:</p>
+      <ol>
+        <li>Add all names to an <code>ArrayList&lt;String&gt;</code>. Print it — shows duplicates, preserves order.</li>
+        <li>Add all names to a <code>HashSet&lt;String&gt;</code>. Print it — duplicates removed, no guaranteed order.</li>
+        <li>Add all names to a <code>TreeSet&lt;String&gt;</code>. Print it — duplicates removed, sorted.</li>
+        <li>Count the frequency of each name using a <code>HashMap&lt;String, Integer&gt;</code>. For each name, use <code>getOrDefault(name, 0) + 1</code> to count occurrences. Print the frequency map.</li>
+        <li>Find the most frequent name by iterating through the map.</li>
+      </ol>
+      <div class="expected-output">--- ArrayList (ordered, with duplicates) ---
+[Alice, Bob, Charlie, Alice, Diana, Bob, Edward, Charlie]
+Size: 8
+
+--- HashSet (no duplicates, unordered) ---
+[Bob, Diana, Alice, Charlie, Edward]
+Size: 5
+
+--- TreeSet (no duplicates, sorted) ---
+[Alice, Bob, Charlie, Diana, Edward]
+Size: 5
+
+--- HashMap (frequency count) ---
+Alice: 2
+Bob: 2
+Charlie: 2
+Diana: 1
+Edward: 1
+
+Most frequent: Alice (2 times)</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Same data, different collection = different behavior. <code>List</code> keeps everything as-is. <code>Set</code> removes duplicates. <code>Map</code> lets you associate data (like counting occurrences). Choose the right collection for the job.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — Student registry</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>StudentRegistry</code> that combines all three collection types.</p>
+      <p>Inside <code>main</code>, build a student registration system:</p>
+      <ol>
+        <li>Create an <code>ArrayList&lt;String&gt;</code> named <code>enrollmentOrder</code> — tracks the order students enrolled.</li>
+        <li>Create a <code>HashSet&lt;String&gt;</code> named <code>uniqueStudents</code> — ensures no duplicates.</li>
+        <li>Create a <code>HashMap&lt;String, Double&gt;</code> named <code>grades</code> — maps student name to GPA.</li>
+        <li>Create a <code>TreeMap&lt;String, String&gt;</code> named <code>courses</code> — maps student name to course (sorted by name).</li>
+      </ol>
+      <p>Write a static method: <code>public static void enroll(String name, double gpa, String course, ...all four collections...)</code></p>
+      <ul>
+        <li>If <code>uniqueStudents</code> already contains the name, print a duplicate error and return.</li>
+        <li>Otherwise, add to all four collections.</li>
+      </ul>
+      <p>Enroll these students (try enrolling "Alice" twice to show duplicate rejection):</p>
+      <ul>
+        <li>"Alice", 3.8, "BSIT"</li>
+        <li>"Bob", 2.5, "BSCS"</li>
+        <li>"Charlie", 3.2, "BSIT"</li>
+        <li>"Alice", 3.9, "BSIT" (duplicate)</li>
+        <li>"Diana", 3.6, "BSCS"</li>
+        <li>"Edward", 1.9, "BSIT"</li>
+      </ul>
+      <p>Then print a full report:</p>
+      <div class="expected-output">--- Enrollment ---
+Enrolled: Alice (BSIT, GPA: 3.8)
+Enrolled: Bob (BSCS, GPA: 2.5)
+Enrolled: Charlie (BSIT, GPA: 3.2)
+Error: Alice is already enrolled.
+Enrolled: Diana (BSCS, GPA: 3.6)
+Enrolled: Edward (BSIT, GPA: 1.9)
+
+========================================
+       STUDENT REGISTRY REPORT
+========================================
+
+Enrollment order (ArrayList):
+  1. Alice
+  2. Bob
+  3. Charlie
+  4. Diana
+  5. Edward
+
+Unique count (HashSet): 5
+
+Grades (HashMap):
+  Alice → 3.8
+  Bob → 2.5
+  Charlie → 3.2
+  Diana → 3.6
+  Edward → 1.9
+
+Courses sorted by name (TreeMap):
+  Alice → BSIT
+  Bob → BSCS
+  Charlie → BSIT
+  Diana → BSCS
+  Edward → BSIT
+
+--- Statistics ---
+Highest GPA: Alice (3.8)
+Lowest GPA: Edward (1.9)
+Average GPA: 2.98
+BSIT students: 3
+BSCS students: 2
+========================================</div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all 10 classes compile and run without errors.</li>
+      <li>Make sure every class is inside the <code>com.school.collections</code> package.</li>
+      <li>Compress your entire <code>Collections</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabFifteen-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabFifteen-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class must have the correct package declaration: <code>package com.school.collections;</code><br>
+    &bull; Class names must match exactly (case-sensitive).<br>
+    &bull; Don't forget to add the required <code>import java.util.*;</code> statements at the top of each file.<br>
+    &bull; <code>HashMap</code> and <code>HashSet</code> do not guarantee order — your output order may differ from the examples, and that is correct.
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Collections (List, Set &amp; Map) &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

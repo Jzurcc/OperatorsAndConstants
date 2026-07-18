@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Exception Handling</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --tag-pink-bg: #FBEAF0;
+    --tag-pink-text: #72243E;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-trycatch { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-finally { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-throw { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-throws { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-custom { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-multi { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .tag-checked { background: var(--tag-pink-bg); color: var(--tag-pink-text); }
+  .tag-mixed { background: #F1EFE8; color: #444441; }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .error-output { background: #2D1117; color: #F08080; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Exception Handling</h1>
+    <div class="header-sub">
+      This exercise covers Java's exception handling mechanism: <code>try-catch</code>, <code>finally</code>,
+      <strong>multiple catch blocks</strong>, <code>throw</code>, <code>throws</code>,
+      <strong>checked vs unchecked exceptions</strong>, and <strong>custom exceptions</strong>.
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Intermediate</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabFourteen-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">try, catch, finally, throw, throws</div></div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>try</code></td>
+        <td>Wraps code that might throw an exception.</td>
+      </tr>
+      <tr>
+        <td><code>catch</code></td>
+        <td>Handles a specific exception type. You can have multiple catch blocks.</td>
+      </tr>
+      <tr>
+        <td><code>finally</code></td>
+        <td>Runs <strong>always</strong> — whether an exception occurred or not. Used for cleanup.</td>
+      </tr>
+      <tr>
+        <td><code>throw</code></td>
+        <td>Manually throws an exception: <code>throw new IllegalArgumentException("msg");</code></td>
+      </tr>
+      <tr>
+        <td><code>throws</code></td>
+        <td>Declares that a method might throw a checked exception: <code>public void read() throws IOException</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <table class="ref-table" style="margin-top:1rem;">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Checked exceptions</th>
+        <th>Unchecked exceptions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>When?</strong></td>
+        <td>Checked at compile time</td>
+        <td>Occur at runtime</td>
+      </tr>
+      <tr>
+        <td><strong>Must handle?</strong></td>
+        <td>Yes — <code>try-catch</code> or <code>throws</code></td>
+        <td>No — but you should</td>
+      </tr>
+      <tr>
+        <td><strong>Extends</strong></td>
+        <td><code>Exception</code></td>
+        <td><code>RuntimeException</code></td>
+      </tr>
+      <tr>
+        <td><strong>Examples</strong></td>
+        <td><code>IOException</code>, <code>FileNotFoundException</code></td>
+        <td><code>NullPointerException</code>, <code>ArithmeticException</code>, <code>ArrayIndexOutOfBoundsException</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>ExceptionHandling</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.exceptions</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class files specified inside the <code>com.school.exceptions</code> package.</li>
+      <li>Each test class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">ExceptionHandling/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/exceptions/</span>
+        ├── <span class="file">BasicTryCatch.java</span>
+        ├── <span class="file">MultipleCatch.java</span>
+        ├── <span class="file">FinallyBlock.java</span>
+        ├── <span class="file">ThrowKeyword.java</span>
+        ├── <span class="file">ThrowsKeyword.java</span>
+        ├── <span class="file">CheckedVsUnchecked.java</span>
+        ├── <span class="file">InvalidAgeException.java</span>
+        ├── <span class="file">TestCustomException.java</span>
+        ├── <span class="file">InsufficientFundsException.java</span>
+        ├── <span class="file">BankAccount.java</span>
+        ├── <span class="file">TestBankAccount.java</span>
+        ├── <span class="file">InvalidGradeException.java</span>
+        ├── <span class="file">StudentNotFoundException.java</span>
+        ├── <span class="file">GradeBook.java</span>
+        └── <span class="file">TestGradeBook.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Basic try-catch</span>
+      <span class="tag tag-trycatch">try-catch</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>BasicTryCatch</code>.</p>
+      <p>Inside <code>main</code>, write <strong>three separate try-catch blocks</strong> that intentionally cause and catch these exceptions:</p>
+      <ol>
+        <li><strong>ArithmeticException:</strong> divide an int by zero.</li>
+        <li><strong>ArrayIndexOutOfBoundsException:</strong> access index 10 of a 5-element array.</li>
+        <li><strong>NumberFormatException:</strong> parse the string <code>"abc"</code> using <code>Integer.parseInt()</code>.</li>
+      </ol>
+      <p>In each <code>catch</code> block, print the exception type and its message. After all three blocks, print "Program continues normally."</p>
+      <div class="expected-output">--- Test 1: Division by zero ---
+Caught: ArithmeticException — / by zero
+
+--- Test 2: Array index out of bounds ---
+Caught: ArrayIndexOutOfBoundsException — Index 10 out of bounds for length 5
+
+--- Test 3: Number format ---
+Caught: NumberFormatException — For input string: "abc"
+
+Program continues normally.</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Without try-catch, any of these exceptions would crash the program. With it, the exception is caught, the error is handled, and the program keeps running.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">Multiple catch blocks</span>
+      <span class="tag tag-trycatch">try-catch</span>
+      <span class="tag tag-multi">Multiple catch</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>MultipleCatch</code>.</p>
+      <p>Inside <code>main</code>, declare:</p>
+      <ul>
+        <li><code>String[] values = {"10", "abc", "30", null, "50"};</code></li>
+      </ul>
+      <p>Write a <strong>single try block</strong> with <strong>multiple catch blocks</strong> that loops through the array and attempts to parse each string to an int and divide 100 by it. Handle these in order:</p>
+      <ol>
+        <li><code>NumberFormatException</code> — for non-numeric strings</li>
+        <li><code>NullPointerException</code> — for null values</li>
+        <li><code>ArithmeticException</code> — in case any parsed value is 0</li>
+        <li><code>Exception</code> — catch-all for anything unexpected (put this <strong>last</strong>)</li>
+      </ol>
+      <p>Print which index caused which exception.</p>
+      <div class="expected-output">Index 0: 100 / 10 = 10
+Index 1: NumberFormatException — For input string: "abc"
+Index 2: 100 / 30 = 3
+Index 3: NullPointerException — Cannot parse null
+Index 4: 100 / 50 = 2</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> When using multiple catch blocks, order matters — put the most specific exception first, and the most general (<code>Exception</code>) last. Java checks them top to bottom and runs the first matching catch.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">The finally block</span>
+      <span class="tag tag-finally">finally</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>FinallyBlock</code>.</p>
+      <p>Inside <code>main</code>, demonstrate three scenarios using try-catch-finally:</p>
+      <ol>
+        <li><strong>No exception:</strong> Divide 10 by 2. The finally block prints <code>"Finally block executed."</code></li>
+        <li><strong>Exception caught:</strong> Divide 10 by 0. Catch the exception. The finally block still runs.</li>
+        <li><strong>Simulating resource cleanup:</strong> Print <code>"Opening connection..."</code> in try, cause an exception, and in finally print <code>"Closing connection... (cleanup)"</code></li>
+      </ol>
+      <div class="expected-output">--- Scenario 1: No exception ---
+Result: 5
+Finally block executed.
+
+--- Scenario 2: Exception caught ---
+Caught: ArithmeticException — / by zero
+Finally block executed.
+
+--- Scenario 3: Resource cleanup ---
+Opening connection...
+Caught: Something went wrong!
+Closing connection... (cleanup)</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>finally</code> <strong>always</strong> runs — whether the try succeeds, fails, or even has a return statement. It's the right place for cleanup: closing files, database connections, network sockets, etc.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">The throw keyword</span>
+      <span class="tag tag-throw">throw</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ThrowKeyword</code>.</p>
+      <p>Write the following <strong>static methods</strong> that validate input and throw exceptions manually:</p>
+      <ul>
+        <li><code>public static void validateAge(int age)</code> — if age &lt; 0 or age &gt; 150, throw <code>new IllegalArgumentException("Invalid age: " + age)</code></li>
+        <li><code>public static void validateName(String name)</code> — if name is null or empty, throw <code>new IllegalArgumentException("Name cannot be null or empty.")</code></li>
+        <li><code>public static double divide(int a, int b)</code> — if b is 0, throw <code>new ArithmeticException("Cannot divide by zero.")</code></li>
+      </ul>
+      <p>Inside <code>main</code>, call each method with valid and invalid inputs. Wrap each call in try-catch.</p>
+      <div class="expected-output">--- validateAge ---
+Age 25: Valid
+Age -5: Caught — Invalid age: -5
+Age 200: Caught — Invalid age: 200
+
+--- validateName ---
+Name "Alice": Valid
+Name "": Caught — Name cannot be null or empty.
+Name null: Caught — Name cannot be null or empty.
+
+--- divide ---
+10 / 3 = 3.33
+10 / 0: Caught — Cannot divide by zero.</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>throw</code> lets you create and throw your own exceptions. Use it in validation methods to reject bad data early instead of letting errors silently propagate.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">The throws keyword</span>
+      <span class="tag tag-throws">throws</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>ThrowsKeyword</code>.</p>
+      <p>Write the following methods that <strong>declare</strong> exceptions using <code>throws</code>:</p>
+      <ul>
+        <li><code>public static int parseAge(String input) throws NumberFormatException</code> — parses the string to int. If parsing fails, the exception propagates to the caller.</li>
+        <li><code>public static void checkEligibility(int age) throws Exception</code> — throws <code>new Exception("Must be 18 or older.")</code> if age &lt; 18.</li>
+        <li><code>public static void processApplication(String ageInput) throws Exception</code> — calls <code>parseAge()</code> then <code>checkEligibility()</code>. Exceptions propagate up.</li>
+      </ul>
+      <p>Inside <code>main</code>, call <code>processApplication()</code> with different inputs. Handle exceptions in main.</p>
+      <div class="expected-output">--- Application 1: "25" ---
+Age: 25
+Application accepted!
+
+--- Application 2: "15" ---
+Rejected: Must be 18 or older.
+
+--- Application 3: "abc" ---
+Error: Invalid age input — For input string: "abc"</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>throws</code> in the method signature tells the caller: "This method might throw this exception — you deal with it." The actual handling happens in the method that calls it. This is called <strong>exception propagation</strong>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Checked vs unchecked exceptions</span>
+      <span class="tag tag-checked">Checked</span>
+      <span class="tag tag-trycatch">try-catch</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>CheckedVsUnchecked</code>.</p>
+      <p>Demonstrate both types:</p>
+      <p><strong>Part 1 — Unchecked (RuntimeException):</strong></p>
+      <ol>
+        <li>Cause a <code>NullPointerException</code>: call <code>.length()</code> on a null String.</li>
+        <li>Cause a <code>StringIndexOutOfBoundsException</code>: call <code>.charAt(50)</code> on a short String.</li>
+        <li>Cause a <code>ClassCastException</code>: cast an Object (that's a String) to Integer.</li>
+      </ol>
+      <p>Wrap each in try-catch. These compile without try-catch, but crash at runtime.</p>
+      <p><strong>Part 2 — Checked (Exception):</strong></p>
+      <ol>
+        <li>Write a method: <code>public static void riskyOperation() throws Exception</code> — throws <code>new Exception("Simulated checked exception")</code>.</li>
+        <li>Call it from main. You <strong>must</strong> either catch it or declare <code>throws</code> — the code won't compile otherwise. Use try-catch.</li>
+      </ol>
+      <div class="expected-output">--- Unchecked exceptions (runtime) ---
+NullPointerException: Cannot invoke "String.length()" because "str" is null
+StringIndexOutOfBoundsException: String index out of range: 50
+ClassCastException: java.lang.String cannot be cast to java.lang.Integer
+
+--- Checked exception (compile-time) ---
+Caught checked exception: Simulated checked exception
+(This would NOT compile without try-catch or throws!)</div>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">Custom exception — InvalidAgeException</span>
+      <span class="tag tag-custom">Custom exception</span>
+      <span class="tag tag-throw">throw</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a <strong>custom exception class</strong> named <code>InvalidAgeException</code> that extends <code>Exception</code>:</p>
+      <ul>
+        <li>Field: <code>int age;</code></li>
+        <li>Constructor: <code>public InvalidAgeException(int age, String message)</code> — calls <code>super(message)</code> and stores the age.</li>
+        <li>Method: <code>public int getAge()</code> — returns the invalid age.</li>
+      </ul>
+      <p>Create <code>TestCustomException</code>. Write a static method:</p>
+      <ul>
+        <li><code>public static void registerVoter(String name, int age) throws InvalidAgeException</code> — if age &lt; 18 or &gt; 120, throw <code>new InvalidAgeException(age, "Age " + age + " is not valid for voter registration.")</code></li>
+      </ul>
+      <p>In <code>main</code>, test with valid and invalid ages.</p>
+      <div class="expected-output">--- Registration 1 ---
+Registering Alice (age 25)... SUCCESS
+
+--- Registration 2 ---
+Registering Bob (age 15)...
+InvalidAgeException: Age 15 is not valid for voter registration.
+Invalid age value: 15
+
+--- Registration 3 ---
+Registering Charlie (age -3)...
+InvalidAgeException: Age -3 is not valid for voter registration.
+Invalid age value: -3</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Custom exceptions let you create <strong>meaningful, domain-specific</strong> error types. Instead of a generic Exception, <code>InvalidAgeException</code> tells the caller exactly what went wrong and carries extra data (the age).
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Custom exception in a class — BankAccount</span>
+      <span class="tag tag-custom">Custom exception</span>
+      <span class="tag tag-throws">throws</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a custom exception class <code>InsufficientFundsException</code> that extends <code>Exception</code>:</p>
+      <ul>
+        <li>Fields: <code>double balance;</code> and <code>double amount;</code></li>
+        <li>Constructor: accepts both and passes a message to <code>super()</code>: <code>"Cannot withdraw [amount]. Balance is only [balance]."</code></li>
+        <li>Getters for both fields.</li>
+        <li>A method: <code>public double getShortfall()</code> — returns <code>amount - balance</code></li>
+      </ul>
+      <p>Create <code>BankAccount</code> with:</p>
+      <ul>
+        <li>Fields: <code>String owner;</code> and <code>double balance;</code></li>
+        <li><code>public void deposit(double amount)</code> — throws <code>IllegalArgumentException</code> if amount &le; 0</li>
+        <li><code>public void withdraw(double amount) throws InsufficientFundsException</code> — throws if amount &gt; balance</li>
+      </ul>
+      <p>Create <code>TestBankAccount</code>. Perform deposits, valid withdrawals, and withdrawals that exceed the balance.</p>
+      <div class="expected-output">Account: Alice, Balance: 10000.0
+
+Deposit 5000.0... Balance: 15000.0
+Withdraw 3000.0... Balance: 12000.0
+
+Attempting to withdraw 20000.0...
+InsufficientFundsException: Cannot withdraw 20000.0. Balance is only 12000.0.
+You are short by: 8000.0
+
+Attempting to deposit -500.0...
+IllegalArgumentException: Deposit amount must be positive.</div>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">Multiple custom exceptions — GradeBook</span>
+      <span class="tag tag-custom">Custom exception</span>
+      <span class="tag tag-multi">Multiple catch</span>
+      <span class="tag tag-finally">finally</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create two custom exception classes:</p>
+      <p><code>InvalidGradeException</code> extends <code>Exception</code>:</p>
+      <ul>
+        <li>Constructor: accepts a double grade and message: <code>"Grade [grade] is invalid. Must be between 0 and 100."</code></li>
+      </ul>
+      <p><code>StudentNotFoundException</code> extends <code>Exception</code>:</p>
+      <ul>
+        <li>Constructor: accepts a String name and message: <code>"Student '[name]' was not found."</code></li>
+      </ul>
+      <p>Create <code>GradeBook</code> with:</p>
+      <ul>
+        <li>Fields: <code>String[] students;</code> and <code>double[] grades;</code> (parallel arrays)</li>
+        <li>Constructor that accepts both arrays.</li>
+        <li><code>public double getGrade(String name) throws StudentNotFoundException</code> — searches for the student, throws if not found.</li>
+        <li><code>public void addGrade(String name, double grade) throws StudentNotFoundException, InvalidGradeException</code> — validates grade (0–100), finds student, updates grade. Throws appropriate exception for each failure.</li>
+      </ul>
+      <p>Create <code>TestGradeBook</code>. Test finding grades, updating grades, and triggering both exceptions. Use finally to print a message after each operation.</p>
+      <div class="expected-output">--- Get grade for Alice ---
+Alice's grade: 88.5
+[finally] Lookup complete.
+
+--- Get grade for Zara ---
+StudentNotFoundException: Student 'Zara' was not found.
+[finally] Lookup complete.
+
+--- Update Bob's grade to 95.0 ---
+Bob's grade updated to 95.0
+[finally] Update operation complete.
+
+--- Update Charlie's grade to 150.0 ---
+InvalidGradeException: Grade 150.0 is invalid. Must be between 0 and 100.
+[finally] Update operation complete.
+
+--- Update Zara's grade to 80.0 ---
+StudentNotFoundException: Student 'Zara' was not found.
+[finally] Update operation complete.</div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — Order processing system</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>This capstone combines try-catch-finally, throw, throws, multiple catch blocks, and custom exceptions.</p>
+      <p>Create the following custom exceptions (each in its own file, all extending <code>Exception</code>). You may create them as inner classes in one file or separate files — your choice:</p>
+      <ul>
+        <li><code>OutOfStockException</code> — fields: <code>String product;</code>, <code>int requested;</code>, <code>int available;</code></li>
+        <li><code>InvalidQuantityException</code> — field: <code>int quantity;</code></li>
+        <li><code>PaymentFailedException</code> — field: <code>String reason;</code></li>
+      </ul>
+      <p>Create a class <code>OrderProcessor</code> with:</p>
+      <ul>
+        <li><code>static String[] products = {"Laptop", "Mouse", "Keyboard"};</code></li>
+        <li><code>static int[] stock = {5, 20, 15};</code></li>
+        <li><code>static double[] prices = {45999.0, 599.0, 1299.0};</code></li>
+      </ul>
+      <p>Add static methods:</p>
+      <ul>
+        <li><code>public static void validateQuantity(int qty) throws InvalidQuantityException</code> — throws if qty &le; 0</li>
+        <li><code>public static int findProduct(String name) throws IllegalArgumentException</code> — returns index, throws if product not found</li>
+        <li><code>public static void checkStock(int index, int qty) throws OutOfStockException</code> — throws if qty &gt; stock</li>
+        <li><code>public static void processPayment(double amount, boolean hasEnoughFunds) throws PaymentFailedException</code> — throws if insufficient funds</li>
+        <li><code>public static void placeOrder(String product, int qty, boolean hasEnoughFunds)</code> — calls all above methods in a try block, catches each exception type, and has a finally block printing <code>"Order processing complete."</code></li>
+      </ul>
+      <p>Create a test class. Place several valid and invalid orders.</p>
+      <div class="expected-output">========================================
+  ORDER PROCESSING SYSTEM
+========================================
+
+--- Order 1: Laptop x 2 ---
+Validating quantity... OK
+Finding product... Found at index 0
+Checking stock... 5 available, 2 requested — OK
+Processing payment of 91998.0... OK
+Order placed! Remaining stock: 3
+[finally] Order processing complete.
+
+--- Order 2: Mouse x 0 ---
+InvalidQuantityException: Quantity must be greater than 0. Got: 0
+[finally] Order processing complete.
+
+--- Order 3: Monitor x 1 ---
+Product not found: Monitor
+[finally] Order processing complete.
+
+--- Order 4: Keyboard x 20 ---
+OutOfStockException: Not enough Keyboard in stock. Requested: 20, Available: 15
+[finally] Order processing complete.
+
+--- Order 5: Mouse x 5 (insufficient funds) ---
+PaymentFailedException: Insufficient funds.
+[finally] Order processing complete.
+
+========================================</div>
+      <div class="note-box">
+        <strong>Key takeaway:</strong> This exercise mirrors a real-world workflow: each step can fail differently, each failure is a specific exception with meaningful data, and every path — success or failure — goes through finally for cleanup. This is how exception handling works in production Java applications.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all classes compile and run without errors.</li>
+      <li>Make sure every class is inside the <code>com.school.exceptions</code> package.</li>
+      <li>Compress your entire <code>ExceptionHandling</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabFourteen-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabFourteen-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class must have the correct package declaration: <code>package com.school.exceptions;</code><br>
+    &bull; Class names must match exactly (case-sensitive).<br>
+    &bull; Custom exception classes need their own <code>.java</code> files.<br>
+    &bull; Remember: checked exceptions <strong>must</strong> be handled (try-catch) or declared (throws).
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Exception Handling &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

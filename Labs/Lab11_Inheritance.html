@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — Inheritance</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-extends { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-override { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-super { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-poly { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-instanceof { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-multilevel { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .tag-hierarchical { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-single { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .tag-mixed { background: #F1EFE8; color: #444441; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>Inheritance</h1>
+    <div class="header-sub">
+      This exercise covers <strong>inheritance</strong> — one of the four pillars of Object-Oriented Programming.
+      You will practice <strong>single</strong>, <strong>multilevel</strong>, and <strong>hierarchical</strong> inheritance
+      using <code>extends</code>, overriding methods with <code>@Override</code>, using <code>super</code>,
+      and understanding <strong>polymorphism</strong> and <code>instanceof</code>.
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Beginner–Intermediate</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabEleven-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">Inheritance, Override, Polymorphism</div></div>
+  </div>
+
+  <!-- TYPES OF INHERITANCE -->
+  <div class="section-title">Types of inheritance in Java</div>
+
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Structure</th>
+        <th>Supported?</th>
+        <th>Example</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Single</strong></td>
+        <td>One parent → one child</td>
+        <td style="color:#1B6D32;font-weight:600;">&#10003; Yes</td>
+        <td><code>Animal → Dog</code></td>
+      </tr>
+      <tr>
+        <td><strong>Multilevel</strong></td>
+        <td>Grandparent → parent → child (chain)</td>
+        <td style="color:#1B6D32;font-weight:600;">&#10003; Yes</td>
+        <td><code>Vehicle → Car → ElectricCar</code></td>
+      </tr>
+      <tr>
+        <td><strong>Hierarchical</strong></td>
+        <td>One parent → multiple children (branching)</td>
+        <td style="color:#1B6D32;font-weight:600;">&#10003; Yes</td>
+        <td><code>Shape → Circle, Rectangle, Triangle</code></td>
+      </tr>
+      <tr>
+        <td><strong>Multiple</strong></td>
+        <td>One child extends two or more parents</td>
+        <td style="color:#A32D2D;font-weight:600;">&#10007; Not with classes</td>
+        <td>Use <strong>interfaces</strong> instead</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="background:#FCEBEB;border-left:4px solid #E24B4A;border-radius:0 8px 8px 0;padding:14px 18px;margin:1rem 0;font-size:14px;color:#791F1F;line-height:1.6;">
+    <strong>Why Java does NOT support multiple inheritance with classes:</strong><br>
+    If class <code>C</code> extends both <code>A</code> and <code>B</code>, and both <code>A</code> and <code>B</code> have a method called <code>display()</code>, Java would not know which version to use — this is called the <strong>Diamond Problem</strong>.<br><br>
+    <code style="background:#f5cccc;color:#791F1F;">class C extends A, B { }</code> → <strong>This will NOT compile.</strong><br><br>
+    Java's solution: use <strong>interfaces</strong>. A class can implement multiple interfaces because the class itself provides the method body, avoiding ambiguity.<br>
+    <code style="background:#f5cccc;color:#791F1F;">class C implements InterfaceA, InterfaceB { }</code> → <strong>This works!</strong><br><br>
+    You will practice this in <strong>Lab 12 (Abstraction)</strong>.
+  </div>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>Inheritance</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.inheritance</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class files specified inside the <code>com.school.inheritance</code> package.</li>
+      <li>Each test class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">Inheritance/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/inheritance/</span>
+        ├── <span class="file">Animal.java</span>
+        ├── <span class="file">Dog.java</span>
+        ├── <span class="file">Cat.java</span>
+        ├── <span class="file">TestAnimal.java</span>
+        ├── <span class="file">Shape.java</span>
+        ├── <span class="file">Circle.java</span>
+        ├── <span class="file">Rectangle.java</span>
+        ├── <span class="file">TestShape.java</span>
+        ├── <span class="file">Person.java</span>
+        ├── <span class="file">Student.java</span>
+        ├── <span class="file">TestPerson.java</span>
+        ├── <span class="file">Vehicle.java</span>
+        ├── <span class="file">Car.java</span>
+        ├── <span class="file">ElectricCar.java</span>
+        ├── <span class="file">TestVehicle.java</span>
+        ├── <span class="file">Appliance.java</span>
+        ├── <span class="file">WashingMachine.java</span>
+        ├── <span class="file">Refrigerator.java</span>
+        ├── <span class="file">TestAppliance.java</span>
+        ├── <span class="file">BankAccount.java</span>
+        ├── <span class="file">SavingsAccount.java</span>
+        ├── <span class="file">CheckingAccount.java</span>
+        ├── <span class="file">TestBankAccount.java</span>
+        ├── <span class="file">Food.java</span>
+        ├── <span class="file">Fruit.java</span>
+        ├── <span class="file">Vegetable.java</span>
+        ├── <span class="file">TestFood.java</span>
+        ├── <span class="file">Device.java</span>
+        ├── <span class="file">Phone.java</span>
+        ├── <span class="file">Laptop.java</span>
+        ├── <span class="file">TestDevice.java</span>
+        ├── <span class="file">Employee.java</span>
+        ├── <span class="file">Manager.java</span>
+        ├── <span class="file">Developer.java</span>
+        ├── <span class="file">TestEmployee.java</span>
+        ├── <span class="file">SchoolMember.java</span>
+        ├── <span class="file">Teacher.java</span>
+        ├── <span class="file">SchoolStudent.java</span>
+        └── <span class="file">TestSchoolSystem.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">Single inheritance — Animal hierarchy</span>
+      <span class="tag tag-single">Single</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a parent class named <code>Animal</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>int age;</code></li>
+        <li>A constructor that accepts both.</li>
+        <li>A method: <code>public void eat()</code> — prints <code>"[name] is eating."</code></li>
+        <li>A method: <code>public void sleep()</code> — prints <code>"[name] is sleeping."</code></li>
+        <li>A method: <code>public void displayInfo()</code> — prints name and age</li>
+      </ul>
+      <p>Create <code>Dog</code> that <strong>extends</strong> <code>Animal</code> with:</p>
+      <ul>
+        <li>Field: <code>String breed;</code></li>
+        <li>A constructor that calls <code>super(name, age)</code> and sets breed.</li>
+        <li>A new method: <code>public void bark()</code> — prints <code>"[name] says: Woof!"</code></li>
+      </ul>
+      <p>Create <code>Cat</code> that <strong>extends</strong> <code>Animal</code> with:</p>
+      <ul>
+        <li>Field: <code>boolean isIndoor;</code></li>
+        <li>A constructor that calls <code>super(name, age)</code> and sets isIndoor.</li>
+        <li>A new method: <code>public void purr()</code> — prints <code>"[name] is purring."</code></li>
+      </ul>
+      <p>Create <code>TestAnimal</code>. Create a Dog and a Cat. Call inherited methods (<code>eat</code>, <code>sleep</code>) and child-specific methods.</p>
+      <div class="expected-output">--- Dog ---
+Name: Bantay, Age: 3, Breed: Aspin
+Bantay is eating.
+Bantay is sleeping.
+Bantay says: Woof!
+
+--- Cat ---
+Name: Mingming, Age: 2, Indoor: true
+Mingming is eating.
+Mingming is sleeping.
+Mingming is purring.</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Dog and Cat inherit <code>eat()</code>, <code>sleep()</code>, and <code>displayInfo()</code> from Animal without rewriting them. They only add their own unique behavior.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">Hierarchical inheritance — Shapes</span>
+      <span class="tag tag-hierarchical">Hierarchical</span>
+      <span class="tag tag-override">@Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a parent class named <code>Shape</code> with:</p>
+      <ul>
+        <li>Field: <code>String color;</code></li>
+        <li>A constructor that accepts color.</li>
+        <li>A method: <code>public double getArea()</code> — returns <code>0.0</code></li>
+        <li>A method: <code>public String getType()</code> — returns <code>"Shape"</code></li>
+        <li>A method: <code>public void displayInfo()</code> — prints type, color, and area</li>
+      </ul>
+      <p>Create <code>Circle</code> that <strong>extends</strong> <code>Shape</code> with:</p>
+      <ul>
+        <li>Field: <code>double radius;</code></li>
+        <li>A constructor that calls <code>super(color)</code> and sets radius.</li>
+        <li><code>@Override getArea()</code> — returns <code>Math.PI * radius * radius</code></li>
+        <li><code>@Override getType()</code> — returns <code>"Circle"</code></li>
+      </ul>
+      <p>Create <code>Rectangle</code> that <strong>extends</strong> <code>Shape</code> with:</p>
+      <ul>
+        <li>Fields: <code>double width;</code> and <code>double height;</code></li>
+        <li>A constructor that calls <code>super(color)</code> and sets width and height.</li>
+        <li><code>@Override getArea()</code> — returns <code>width * height</code></li>
+        <li><code>@Override getType()</code> — returns <code>"Rectangle"</code></li>
+      </ul>
+      <p>Create <code>TestShape</code>. Create a Circle and a Rectangle, call <code>displayInfo()</code> on each.</p>
+      <div class="expected-output">--- Shape 1 ---
+Type: Circle
+Color: Red
+Area: 78.54
+
+--- Shape 2 ---
+Type: Rectangle
+Color: Blue
+Area: 40.00</div>
+      <p><em>Hint: use <code>String.format("%.2f", getArea())</code> inside <code>displayInfo()</code>.</em></p>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">Single inheritance + super — Person &amp; Student</span>
+      <span class="tag tag-single">Single</span>
+      <span class="tag tag-override">@Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Person</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>int age;</code></li>
+        <li>A constructor that accepts both.</li>
+        <li>A method: <code>public void displayInfo()</code> — prints name and age</li>
+      </ul>
+      <p>Create <code>Student</code> that <strong>extends</strong> <code>Person</code> with:</p>
+      <ul>
+        <li>Fields: <code>String course;</code> and <code>double gpa;</code></li>
+        <li>A constructor that calls <code>super(name, age)</code> and sets course and gpa.</li>
+        <li><code>@Override displayInfo()</code> — call <code>super.displayInfo()</code> first, then print course and gpa</li>
+        <li>A method: <code>public String getStanding()</code> — returns <code>"Dean's List"</code> if GPA &ge; 3.5, <code>"Regular"</code> if &ge; 2.0, otherwise <code>"Probation"</code></li>
+      </ul>
+      <p>Create <code>TestPerson</code>. Create a Person and two Students.</p>
+      <div class="expected-output">--- Person ---
+Name: Maria Santos
+Age: 45
+
+--- Student 1 ---
+Name: Alice Reyes
+Age: 20
+Course: BSIT
+GPA: 3.8
+Standing: Dean's List
+
+--- Student 2 ---
+Name: Bob Cruz
+Age: 22
+Course: BSCS
+GPA: 1.8
+Standing: Probation</div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">Multilevel inheritance — Vehicle chain</span>
+      <span class="tag tag-multilevel">Multilevel</span>
+      <span class="tag tag-super">super</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a <strong>three-level</strong> inheritance chain:</p>
+      <p><strong>Level 1:</strong> <code>Vehicle</code></p>
+      <ul>
+        <li>Fields: <code>String brand;</code> and <code>int year;</code></li>
+        <li>A constructor, and a <code>displayInfo()</code> method.</li>
+      </ul>
+      <p><strong>Level 2:</strong> <code>Car</code> extends <code>Vehicle</code></p>
+      <ul>
+        <li>Fields: <code>int doors;</code> and <code>String fuelType;</code></li>
+        <li>A constructor that calls <code>super(brand, year)</code>.</li>
+        <li><code>@Override displayInfo()</code> — call <code>super.displayInfo()</code>, then print car-specific fields.</li>
+      </ul>
+      <p><strong>Level 3:</strong> <code>ElectricCar</code> extends <code>Car</code></p>
+      <ul>
+        <li>Fields: <code>int batteryCapacity;</code> (kWh) and <code>int range;</code> (km)</li>
+        <li>A constructor that calls <code>super(brand, year, doors, "Electric")</code>.</li>
+        <li><code>@Override displayInfo()</code> — call <code>super.displayInfo()</code>, then print battery and range.</li>
+      </ul>
+      <p>Create <code>TestVehicle</code>. Create one of each type.</p>
+      <div class="expected-output">--- Vehicle ---
+Brand: Generic Motors
+Year: 2020
+
+--- Car ---
+Brand: Toyota
+Year: 2023
+Doors: 4
+Fuel: Gasoline
+
+--- Electric Car ---
+Brand: Tesla
+Year: 2024
+Doors: 4
+Fuel: Electric
+Battery: 75 kWh
+Range: 450 km</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Each level adds its own data and calls <code>super</code> to reuse the parent's logic. ElectricCar → Car → Vehicle. The constructor chain flows upward, the display chain flows downward.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">Hierarchical + polymorphism — Appliance</span>
+      <span class="tag tag-hierarchical">Hierarchical</span>
+    </div>
+    <div class="exercise-body">
+      <p>Reuse the <code>Appliance</code> hierarchy for this exercise.</p>
+      <p>Create <code>Appliance</code> with:</p>
+      <ul>
+        <li>Fields: <code>String brand;</code> and <code>double price;</code></li>
+        <li>A constructor, and methods: <code>public void turnOn()</code>, <code>public void turnOff()</code>, <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>WashingMachine</code> extends <code>Appliance</code> with:</p>
+      <ul>
+        <li>Field: <code>int loadKg;</code></li>
+        <li><code>@Override turnOn()</code> — prints <code>"Washing machine is running with [loadKg]kg load."</code></li>
+        <li><code>@Override displayInfo()</code></li>
+      </ul>
+      <p>Create <code>Refrigerator</code> extends <code>Appliance</code> with:</p>
+      <ul>
+        <li>Field: <code>double temperature;</code></li>
+        <li><code>@Override turnOn()</code> — prints <code>"Refrigerator is cooling to [temperature]°C."</code></li>
+        <li><code>@Override displayInfo()</code></li>
+      </ul>
+      <p>Create <code>TestAppliance</code>. Store both in an <code>Appliance[]</code> array and loop through to call <code>turnOn()</code> and <code>displayInfo()</code>.</p>
+      <div class="expected-output">--- Appliance 1 ---
+Washing machine is running with 8kg load.
+Brand: Samsung, Price: 18999.0, Load: 8kg
+
+--- Appliance 2 ---
+Refrigerator is cooling to 4.0°C.
+Brand: LG, Price: 32500.0, Temp: 4.0°C</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> The array type is <code>Appliance[]</code> but it holds WashingMachine and Refrigerator objects. When you call <code>turnOn()</code>, Java runs the child's overridden version — this is <strong>polymorphism</strong>. One method call, different behavior depending on the actual object.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">Hierarchical with business logic — BankAccount</span>
+      <span class="tag tag-hierarchical">Hierarchical</span>
+      <span class="tag tag-override">@Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create <code>BankAccount</code> with:</p>
+      <ul>
+        <li>Fields: <code>String owner;</code> and <code>double balance;</code></li>
+        <li>A constructor that accepts both.</li>
+        <li>Methods: <code>public void deposit(double amount)</code>, <code>public void withdraw(double amount)</code> (with validation), <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>SavingsAccount</code> extends <code>BankAccount</code> with:</p>
+      <ul>
+        <li>Field: <code>double interestRate;</code></li>
+        <li>A constructor that calls <code>super(owner, balance)</code>.</li>
+        <li>A method: <code>public void applyInterest()</code> — adds <code>balance * interestRate</code> to balance</li>
+        <li><code>@Override displayInfo()</code> — call super, then print interest rate</li>
+      </ul>
+      <p>Create <code>CheckingAccount</code> extends <code>BankAccount</code> with:</p>
+      <ul>
+        <li>Field: <code>double overdraftLimit;</code></li>
+        <li>A constructor that calls <code>super(owner, balance)</code>.</li>
+        <li><code>@Override withdraw(double amount)</code> — allow withdrawal if amount &le; balance + overdraftLimit</li>
+        <li><code>@Override displayInfo()</code> — call super, then print overdraft limit</li>
+      </ul>
+      <p>Create <code>TestBankAccount</code>. Test deposits, withdrawals, interest, and overdraft.</p>
+      <div class="expected-output">--- Savings Account ---
+Owner: Alice, Balance: 50000.0, Interest: 2.5%
+Applying interest...
+Owner: Alice, Balance: 51250.0, Interest: 2.5%
+
+--- Checking Account ---
+Owner: Bob, Balance: 10000.0, Overdraft limit: 5000.0
+Withdrawing 12000.0...
+Owner: Bob, Balance: -2000.0, Overdraft limit: 5000.0
+Withdrawing 5000.0...
+Error: Exceeds overdraft limit.</div>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">Hierarchical + instanceof — Food</span>
+      <span class="tag tag-hierarchical">Hierarchical</span>
+      <span class="tag tag-poly">Polymorphism</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create <code>Food</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>int calories;</code></li>
+        <li>A constructor, and <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>Fruit</code> extends <code>Food</code> with:</p>
+      <ul>
+        <li>Field: <code>String season;</code></li>
+        <li><code>@Override displayInfo()</code></li>
+      </ul>
+      <p>Create <code>Vegetable</code> extends <code>Food</code> with:</p>
+      <ul>
+        <li>Field: <code>boolean isLeafy;</code></li>
+        <li><code>@Override displayInfo()</code></li>
+      </ul>
+      <p>Create <code>TestFood</code>. Store a mix of Food, Fruit, and Vegetable objects in a <code>Food[]</code> array. Loop through and use <code>instanceof</code> to identify the type of each item.</p>
+      <div class="expected-output">--- Checking food items ---
+
+Rice (200 cal) → is Food: true, is Fruit: false, is Vegetable: false
+
+Mango (60 cal, Season: Summer) → is Food: true, is Fruit: true, is Vegetable: false
+
+Broccoli (55 cal, Leafy: true) → is Food: true, is Fruit: false, is Vegetable: true</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>instanceof</code> checks the actual runtime type. A Fruit <code>instanceof Food</code> is <code>true</code> because Fruit IS-A Food. But a Food <code>instanceof Fruit</code> is <code>false</code> if it was created as a plain Food.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Hierarchical — Inherited + new methods — Device</span>
+      <span class="tag tag-hierarchical">Hierarchical</span>
+      <span class="tag tag-override">@Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create <code>Device</code> with:</p>
+      <ul>
+        <li>Fields: <code>String brand;</code> and <code>double price;</code></li>
+        <li>A constructor, and methods: <code>public void powerOn()</code>, <code>public void powerOff()</code>, <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>Phone</code> extends <code>Device</code> with:</p>
+      <ul>
+        <li>Fields: <code>double screenSize;</code> and <code>int storage;</code></li>
+        <li>A constructor that calls <code>super(brand, price)</code>.</li>
+        <li><code>@Override powerOn()</code> — prints <code>"Phone screen is on."</code></li>
+        <li>New method: <code>public void makeCall(String number)</code></li>
+        <li><code>@Override displayInfo()</code></li>
+      </ul>
+      <p>Create <code>Laptop</code> extends <code>Device</code> with:</p>
+      <ul>
+        <li>Fields: <code>int ram;</code> and <code>String processor;</code></li>
+        <li>A constructor that calls <code>super(brand, price)</code>.</li>
+        <li><code>@Override powerOn()</code> — prints <code>"Laptop booting up..."</code></li>
+        <li>New method: <code>public void openApp(String appName)</code></li>
+        <li><code>@Override displayInfo()</code></li>
+      </ul>
+      <p>Create <code>TestDevice</code>. Create a Phone and Laptop, call inherited and new methods.</p>
+      <div class="expected-output">--- Phone ---
+Brand: Samsung, Price: 24990.0
+Screen: 6.5", Storage: 128GB
+Phone screen is on.
+Calling 09171234567...
+
+--- Laptop ---
+Brand: Lenovo, Price: 45999.0
+RAM: 16GB, Processor: Intel i7
+Laptop booting up...
+Opening IntelliJ IDEA...</div>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">Hierarchical + polymorphic payroll — Employee</span>
+      <span class="tag tag-hierarchical">Hierarchical</span>
+      <span class="tag tag-override">@Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create <code>Employee</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>double baseSalary;</code></li>
+        <li>A constructor, and methods: <code>public double calculatePay()</code> (returns baseSalary), <code>public String getRole()</code> (returns <code>"Employee"</code>), <code>public void displayPayslip()</code></li>
+      </ul>
+      <p>Create <code>Manager</code> extends <code>Employee</code> with:</p>
+      <ul>
+        <li>Field: <code>double bonus;</code></li>
+        <li><code>@Override calculatePay()</code> — returns <code>baseSalary + bonus</code></li>
+        <li><code>@Override getRole()</code> — returns <code>"Manager"</code></li>
+      </ul>
+      <p>Create <code>Developer</code> extends <code>Employee</code> with:</p>
+      <ul>
+        <li>Field: <code>int overtimeHours;</code> and <code>static final double OVERTIME_RATE = 500.0;</code></li>
+        <li><code>@Override calculatePay()</code> — returns <code>baseSalary + (overtimeHours * OVERTIME_RATE)</code></li>
+        <li><code>@Override getRole()</code> — returns <code>"Developer"</code></li>
+      </ul>
+      <p>Create <code>TestEmployee</code>. Store all in an <code>Employee[]</code> array. Loop through to print each payslip and compute total payroll.</p>
+      <div class="expected-output">========================================
+          PAYROLL REPORT
+========================================
+
+[Manager] Alice Santos
+  Base: 80000.0, Bonus: 15000.0
+  Total pay: 95000.0
+
+[Developer] Bob Garcia
+  Base: 55000.0, OT: 20 hrs x 500.0
+  Total pay: 65000.0
+
+[Developer] Charlie Reyes
+  Base: 55000.0, OT: 10 hrs x 500.0
+  Total pay: 60000.0
+
+----------------------------------------
+Total payroll: 220000.0
+========================================</div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — School system</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>This exercise combines inheritance, overriding, super, polymorphism, instanceof, and static fields.</p>
+      <p>Create <code>SchoolMember</code> with:</p>
+      <ul>
+        <li><code>static int totalMembers = 0;</code></li>
+        <li>Fields: <code>int id;</code> (auto-assigned), <code>String name;</code>, <code>int age;</code></li>
+        <li>A constructor that auto-increments <code>totalMembers</code> and assigns <code>id</code>.</li>
+        <li>Methods: <code>public String getRole()</code> (returns <code>"Member"</code>), <code>public double getMonthlyPay()</code> (returns <code>0.0</code>), <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create <code>Teacher</code> extends <code>SchoolMember</code> with:</p>
+      <ul>
+        <li>Fields: <code>String subject;</code> and <code>double salary;</code></li>
+        <li><code>@Override getRole()</code> — returns <code>"Teacher"</code></li>
+        <li><code>@Override getMonthlyPay()</code> — returns salary</li>
+        <li><code>@Override displayInfo()</code> — call <code>super.displayInfo()</code>, then print subject and salary</li>
+      </ul>
+      <p>Create <code>SchoolStudent</code> extends <code>SchoolMember</code> with:</p>
+      <ul>
+        <li>Fields: <code>String course;</code>, <code>double gpa;</code>, <code>double tuition;</code></li>
+        <li><code>@Override getRole()</code> — returns <code>"Student"</code></li>
+        <li><code>@Override getMonthlyPay()</code> — returns <code>0.0</code> (students don't get paid)</li>
+        <li><code>@Override displayInfo()</code> — call <code>super.displayInfo()</code>, then print course, gpa, and tuition</li>
+        <li>A method: <code>public String getStanding()</code></li>
+      </ul>
+      <p>Create <code>TestSchoolSystem</code>. Create 2 Teachers and 3 Students. Store all 5 in a <code>SchoolMember[]</code> array. Loop through and:</p>
+      <ol>
+        <li>Call <code>displayInfo()</code> on each (polymorphic).</li>
+        <li>Use <code>instanceof</code> to count teachers vs students.</li>
+        <li>Compute total monthly payroll (sum of <code>getMonthlyPay()</code>).</li>
+        <li>Compute total tuition revenue (sum tuition of SchoolStudents using instanceof + casting).</li>
+      </ol>
+      <div class="expected-output">========================================
+      SCHOOL MEMBER DIRECTORY
+========================================
+
+[ID: 1] Teacher — Mr. Garcia, Age: 35
+  Subject: Java Programming
+  Salary: 45000.0
+
+[ID: 2] Teacher — Ms. Reyes, Age: 40
+  Subject: Data Structures
+  Salary: 48000.0
+
+[ID: 3] Student — Alice, Age: 20
+  Course: BSIT, GPA: 3.8
+  Standing: Dean's List
+  Tuition: 35000.0
+
+[ID: 4] Student — Bob, Age: 21
+  Course: BSCS, GPA: 2.5
+  Standing: Regular
+  Tuition: 35000.0
+
+[ID: 5] Student — Charlie, Age: 19
+  Course: BSIT, GPA: 1.8
+  Standing: Probation
+  Tuition: 35000.0
+
+========================================
+          SUMMARY
+========================================
+Total members: 5
+Teachers: 2
+Students: 3
+Monthly payroll: 93000.0
+Total tuition revenue: 105000.0
+========================================</div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all classes compile and run without errors.</li>
+      <li>Make sure every class is inside the <code>com.school.inheritance</code> package.</li>
+      <li>Compress your entire <code>Inheritance</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabEleven-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabEleven-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class must have the correct package declaration: <code>package com.school.inheritance;</code><br>
+    &bull; Class names must match exactly (case-sensitive).<br>
+    &bull; Use <code>@Override</code> annotation on every overridden method.<br>
+    &bull; Remember: Java supports <strong>single</strong>, <strong>multilevel</strong>, and <strong>hierarchical</strong> inheritance with classes. <strong>Multiple inheritance is only possible through interfaces</strong> (covered in Lab 12).
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; Inheritance &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>

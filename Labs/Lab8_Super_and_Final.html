@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Java Coding Exercise — super &amp; final Keywords</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --surface: #FFFFFF;
+    --border: #E8E6E0;
+    --text: #1A1917;
+    --text-muted: #6B6963;
+    --text-hint: #9C9890;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --accent-dark: #1B3A99;
+    --code-bg: #F5F4F0;
+    --tag-green-bg: #E6F4EA;
+    --tag-green-text: #1B6D32;
+    --tag-purple-bg: #F0ECFE;
+    --tag-purple-text: #4A2FB8;
+    --tag-amber-bg: #FEF4E0;
+    --tag-amber-text: #8B5E0F;
+    --tag-coral-bg: #FDECEA;
+    --tag-coral-text: #A33225;
+    --tag-blue-bg: #E6F1FB;
+    --tag-blue-text: #0C447C;
+    --tag-teal-bg: #E1F5EE;
+    --tag-teal-text: #085041;
+    --warn-bg: #FFF8E6;
+    --warn-border: #F0D060;
+    --warn-text: #7A5D00;
+    --note-bg: #EBF0FD;
+    --note-border: #2D5BE3;
+    --note-text: #1B3A99;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; font-size: 15px; }
+  .page { max-width: 820px; margin: 0 auto; padding: 3rem 2.5rem 4rem; }
+  .header { border-bottom: 3px solid var(--text); padding-bottom: 2rem; margin-bottom: 2.5rem; }
+  .header-label { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-hint); font-weight: 600; margin-bottom: 0.5rem; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 32px; font-weight: 400; line-height: 1.25; margin-bottom: 0.75rem; }
+  .header-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; }
+  .info-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
+  .info-item { background: var(--surface); padding: 14px 18px; }
+  .info-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-hint); font-weight: 600; margin-bottom: 3px; }
+  .info-item .value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1.5px solid var(--border); }
+  .setup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem 1.75rem; margin-bottom: 1.5rem; }
+  .setup-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 0.75rem; }
+  .setup-steps { counter-reset: setup; list-style: none; padding: 0; }
+  .setup-steps li { counter-increment: setup; padding: 8px 0 8px 42px; position: relative; border-bottom: 1px solid #F2F1ED; }
+  .setup-steps li:last-child { border-bottom: none; }
+  .setup-steps li::before { content: counter(setup); position: absolute; left: 0; top: 9px; width: 26px; height: 26px; background: var(--accent-light); color: var(--accent-dark); border-radius: 50%; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  code, .code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); padding: 2px 7px; border-radius: 4px; color: var(--accent-dark); }
+  .warning-box { background: var(--warn-bg); border-left: 4px solid var(--warn-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--warn-text); line-height: 1.6; }
+  .warning-box strong { color: #5C4500; }
+  .note-box { background: var(--note-bg); border-left: 4px solid var(--note-border); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 1.5rem 0; font-size: 14px; color: var(--note-text); line-height: 1.6; }
+  .note-box strong { color: var(--accent-dark); }
+  .folder-tree { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: #1E1E1E; color: #D4D4D4; padding: 1.25rem 1.5rem; border-radius: 8px; line-height: 1.9; margin: 1rem 0 1.5rem; overflow-x: auto; }
+  .folder-tree .folder { color: #DCDCAA; }
+  .folder-tree .file { color: #9CDCFE; }
+  .folder-tree .pkg { color: #CE9178; }
+  .exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.25rem; overflow: hidden; page-break-inside: avoid; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .exercise-num { background: var(--text); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+  .exercise-title { font-weight: 600; font-size: 15px; flex: 1; }
+  .tag { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .tag-super { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+  .tag-final-var { background: var(--tag-amber-bg); color: var(--tag-amber-text); }
+  .tag-final-method { background: var(--tag-coral-bg); color: var(--tag-coral-text); }
+  .tag-final-class { background: var(--tag-blue-bg); color: var(--tag-blue-text); }
+  .tag-mixed { background: var(--tag-teal-bg); color: var(--tag-teal-text); }
+  .tag-override { background: var(--tag-green-bg); color: var(--tag-green-text); }
+  .exercise-body { padding: 18px; }
+  .exercise-body p { margin-bottom: 0.75rem; }
+  .exercise-body ul, .exercise-body ol { margin: 0.5rem 0 0.75rem 1.25rem; }
+  .exercise-body li { margin-bottom: 4px; }
+  .expected-output { background: #1E1E1E; color: #B5CEA8; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .error-output { background: #2D1117; color: #F08080; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; padding: 12px 16px; border-radius: 6px; margin: 0.75rem 0; white-space: pre; overflow-x: auto; line-height: 1.7; }
+  .ref-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 14px; }
+  .ref-table th { background: var(--code-bg); text-align: left; padding: 10px 14px; font-weight: 600; border-bottom: 2px solid var(--border); }
+  .ref-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .submission-box { background: var(--accent-light); border: 2px solid var(--accent); border-radius: 10px; padding: 1.5rem 1.75rem; margin-top: 2.5rem; }
+  .submission-box h3 { font-size: 16px; font-weight: 700; color: var(--accent-dark); margin-bottom: 0.75rem; }
+  .submission-box ol { margin-left: 1.25rem; }
+  .submission-box li { margin-bottom: 6px; color: var(--text); }
+  .filename-format { display: inline-block; background: var(--accent); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; padding: 6px 16px; border-radius: 6px; margin: 0.5rem 0; }
+  .footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1.5px solid var(--border); font-size: 13px; color: var(--text-hint); text-align: center; }
+  @media print { body { font-size: 13px; background: #fff; } .page { padding: 1.5rem; } .exercise { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-label">Java Programming — Coding Exercise</div>
+    <h1>super &amp; final Keywords</h1>
+    <div class="header-sub">
+      This exercise covers two important Java keywords: <code>super</code> (to access parent class members and constructors)
+      and <code>final</code> (to create constants, prevent method overriding, and prevent class inheritance).
+      Follow every instruction carefully.
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-item"><div class="label">Difficulty</div><div class="value">Beginner–Intermediate</div></div>
+    <div class="info-item"><div class="label">Exercises</div><div class="value">10 items</div></div>
+    <div class="info-item"><div class="label">Submission</div><div class="value">EID_LabEight-School.zip</div></div>
+    <div class="info-item"><div class="label">Topics</div><div class="value">super, final</div></div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div class="section-title">Quick reference</div>
+
+  <table class="ref-table">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Used on</th>
+        <th>Effect</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>super()</code></td>
+        <td>Constructor call</td>
+        <td>Calls the parent class constructor. Must be the first statement.</td>
+      </tr>
+      <tr>
+        <td><code>super.field</code></td>
+        <td>Field access</td>
+        <td>Accesses the parent's field when it is hidden by a child field of the same name.</td>
+      </tr>
+      <tr>
+        <td><code>super.method()</code></td>
+        <td>Method call</td>
+        <td>Calls the parent's version of an overridden method.</td>
+      </tr>
+      <tr>
+        <td><code>final</code></td>
+        <td>Variable</td>
+        <td>Value cannot be changed once assigned (constant).</td>
+      </tr>
+      <tr>
+        <td><code>final</code></td>
+        <td>Method</td>
+        <td>Method cannot be overridden by subclasses.</td>
+      </tr>
+      <tr>
+        <td><code>final</code></td>
+        <td>Class</td>
+        <td>Class cannot be extended (no subclasses allowed).</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- PROJECT SETUP -->
+  <div class="section-title">Project setup</div>
+
+  <div class="setup-box">
+    <h3>Follow these steps exactly:</h3>
+    <ol class="setup-steps">
+      <li>Open <strong>IntelliJ IDEA</strong>.</li>
+      <li>Create a new <strong>Java project</strong> named <code>SuperAndFinal</code>.</li>
+      <li>Inside the <code>src</code> folder, create a <strong>package</strong> named <code>com.school.keywords</code>.</li>
+      <li>For <strong>each exercise below</strong>, create the class files specified inside the <code>com.school.keywords</code> package.</li>
+      <li>Each test class <strong>must have</strong> a <code>public static void main(String[] args)</code> method.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Important:</strong> Follow class names, package names, and file names exactly as written. Incorrect names will be marked as incomplete.
+  </div>
+
+  <div class="folder-tree"><span class="folder">SuperAndFinal/</span>
+└── <span class="folder">src/</span>
+    └── <span class="pkg">com/school/keywords/</span>
+        ├── <span class="file">Animal.java</span>
+        ├── <span class="file">Dog.java</span>
+        ├── <span class="file">TestSuperConstructor.java</span>
+        ├── <span class="file">Person.java</span>
+        ├── <span class="file">Employee.java</span>
+        ├── <span class="file">TestSuperMethod.java</span>
+        ├── <span class="file">Vehicle.java</span>
+        ├── <span class="file">Car.java</span>
+        ├── <span class="file">TestSuperField.java</span>
+        ├── <span class="file">MathConstants.java</span>
+        ├── <span class="file">TestFinalVariable.java</span>
+        ├── <span class="file">Shape.java</span>
+        ├── <span class="file">Circle.java</span>
+        ├── <span class="file">TestFinalMethod.java</span>
+        ├── <span class="file">Config.java</span>
+        ├── <span class="file">TestFinalClass.java</span>
+        ├── <span class="file">Appliance.java</span>
+        ├── <span class="file">WashingMachine.java</span>
+        ├── <span class="file">TestSuperChain.java</span>
+        ├── <span class="file">BankAccount.java</span>
+        ├── <span class="file">SavingsAccount.java</span>
+        ├── <span class="file">TestSuperAndFinal.java</span>
+        ├── <span class="file">Game.java</span>
+        ├── <span class="file">BoardGame.java</span>
+        ├── <span class="file">TestFinalOverride.java</span>
+        ├── <span class="file">SchoolMember.java</span>
+        ├── <span class="file">Teacher.java</span>
+        ├── <span class="file">Student.java</span>
+        └── <span class="file">TestSchoolSystem.java</span></div>
+
+  <!-- EXERCISES -->
+  <div class="section-title">Exercises</div>
+
+  <!-- Exercise 01 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">01</span>
+      <span class="exercise-title">super() — Calling parent constructor</span>
+      <span class="tag tag-super">super</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Animal</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>int age;</code></li>
+        <li>A constructor: <code>public Animal(String name, int age)</code> that assigns both and prints <code>"Animal constructor called"</code></li>
+        <li>A method: <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create a class named <code>Dog</code> that <strong>extends</strong> <code>Animal</code> with:</p>
+      <ul>
+        <li>Field: <code>String breed;</code></li>
+        <li>A constructor: <code>public Dog(String name, int age, String breed)</code> that calls <code>super(name, age)</code> as the first line, then assigns breed and prints <code>"Dog constructor called"</code></li>
+        <li>A method: <code>public void displayDogInfo()</code> — prints all three fields</li>
+      </ul>
+      <p>Create <code>TestSuperConstructor</code>. Create a <code>Dog</code> object and call both display methods.</p>
+      <div class="expected-output">Animal constructor called
+Dog constructor called
+
+Name: Bantay
+Age: 3
+Breed: Aspin</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>super(name, age)</code> calls the parent's constructor, passing values up. It must be the <strong>first statement</strong> in the child constructor. The parent constructor runs first, then the child continues.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 02 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">02</span>
+      <span class="exercise-title">super.method() — Calling parent method</span>
+      <span class="tag tag-super">super</span>
+      <span class="tag tag-override">Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Person</code> with:</p>
+      <ul>
+        <li>Fields: <code>String name;</code> and <code>int age;</code></li>
+        <li>A constructor that accepts both.</li>
+        <li>A method: <code>public void introduce()</code> — prints <code>"Hi, I'm [name], age [age]."</code></li>
+      </ul>
+      <p>Create a class named <code>Employee</code> that <strong>extends</strong> <code>Person</code> with:</p>
+      <ul>
+        <li>Fields: <code>String company;</code> and <code>String position;</code></li>
+        <li>A constructor that calls <code>super(name, age)</code> and sets company and position.</li>
+        <li><strong>Override</strong> <code>introduce()</code>: first call <code>super.introduce()</code> to print the parent's version, then print company and position on additional lines.</li>
+      </ul>
+      <p>Create <code>TestSuperMethod</code>. Create a <code>Person</code> and an <code>Employee</code>, call <code>introduce()</code> on each.</p>
+      <div class="expected-output">--- Person ---
+Hi, I'm Maria Santos, age 30.
+
+--- Employee ---
+Hi, I'm Carlos Garcia, age 28.
+Company: Accenture
+Position: Java Developer</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> <code>super.introduce()</code> lets the child reuse the parent's logic instead of rewriting it. The child adds its own behavior on top.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 03 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">03</span>
+      <span class="exercise-title">super.field — Accessing hidden parent field</span>
+      <span class="tag tag-super">super</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Vehicle</code> with:</p>
+      <ul>
+        <li>Field: <code>String type = "Generic Vehicle";</code></li>
+        <li>A method: <code>public void showType()</code> — prints the type</li>
+      </ul>
+      <p>Create a class named <code>Car</code> that <strong>extends</strong> <code>Vehicle</code> with:</p>
+      <ul>
+        <li>Field: <code>String type = "Car";</code> (same name — this <strong>hides</strong> the parent field)</li>
+        <li>A method: <code>public void showBothTypes()</code> — prints <code>this.type</code> (child) and <code>super.type</code> (parent)</li>
+      </ul>
+      <p>Create <code>TestSuperField</code>. Create a <code>Car</code> object and call <code>showBothTypes()</code>.</p>
+      <div class="expected-output">Child type (this.type): Car
+Parent type (super.type): Generic Vehicle</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> When a child class declares a field with the same name as the parent, it <strong>hides</strong> (not overrides) the parent's field. Use <code>super.type</code> to access the parent's version.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 04 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">04</span>
+      <span class="exercise-title">final variable — Constants</span>
+      <span class="tag tag-final-var">final variable</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>MathConstants</code> with:</p>
+      <ul>
+        <li><code>static final double PI = 3.14159;</code></li>
+        <li><code>static final double EULER = 2.71828;</code></li>
+        <li><code>static final int MAX_ARRAY_SIZE = 100;</code></li>
+        <li><code>static final String APP_NAME = "MathHelper";</code></li>
+      </ul>
+      <p>Create <code>TestFinalVariable</code>. In <code>main</code>:</p>
+      <ol>
+        <li>Print all constants.</li>
+        <li>Declare a local <code>final int x = 10;</code>. Print it.</li>
+        <li><strong>Try</strong> to reassign <code>x = 20;</code>. You will get a compile error. Write the error as a comment and leave the line commented out.</li>
+      </ol>
+      <div class="expected-output">PI: 3.14159
+Euler: 2.71828
+Max array size: 100
+App name: MathHelper
+Local final x: 10</div>
+      <div class="error-output">// x = 20; → ERROR: cannot assign a value to final variable x</div>
+    </div>
+  </div>
+
+  <!-- Exercise 05 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">05</span>
+      <span class="exercise-title">final method — Cannot be overridden</span>
+      <span class="tag tag-final-method">final method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Shape</code> with:</p>
+      <ul>
+        <li>Field: <code>String color;</code></li>
+        <li>A constructor that accepts color.</li>
+        <li>A <strong>final</strong> method: <code>public final String getColor()</code> — returns the color. This cannot be overridden.</li>
+        <li>A regular method: <code>public double getArea()</code> — returns <code>0.0</code> (meant to be overridden)</li>
+      </ul>
+      <p>Create a class named <code>Circle</code> that <strong>extends</strong> <code>Shape</code> with:</p>
+      <ul>
+        <li>Field: <code>double radius;</code></li>
+        <li>A constructor that calls <code>super(color)</code> and sets radius.</li>
+        <li><strong>Override</strong> <code>getArea()</code> — return <code>Math.PI * radius * radius</code></li>
+        <li><strong>Try</strong> to override <code>getColor()</code> — you will get a compile error. Write the error as a comment and leave it commented out.</li>
+      </ul>
+      <p>Create <code>TestFinalMethod</code>. Create a <code>Circle</code> and print its color and area.</p>
+      <div class="expected-output">Color: Red
+Area: 78.54</div>
+      <div class="error-output">// Cannot override getColor() → ERROR: getColor() in Circle cannot override getColor() in Shape; overridden method is final</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> Marking a method as <code>final</code> guarantees it behaves the same way in every subclass. Use it to protect critical logic from being changed.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 06 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">06</span>
+      <span class="exercise-title">final class — Cannot be extended</span>
+      <span class="tag tag-final-class">final class</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a <strong>final</strong> class named <code>Config</code>:</p>
+      <ul>
+        <li><code>public final class Config</code></li>
+        <li><code>static final String DB_HOST = "localhost";</code></li>
+        <li><code>static final int DB_PORT = 3306;</code></li>
+        <li><code>static final String DB_NAME = "school_db";</code></li>
+        <li>A static method: <code>public static String getConnectionString()</code> — returns <code>"jdbc:mysql://localhost:3306/school_db"</code></li>
+      </ul>
+      <p>Create <code>TestFinalClass</code>. In <code>main</code>:</p>
+      <ol>
+        <li>Print all config values and the connection string.</li>
+        <li><strong>Try</strong> to create a class that extends <code>Config</code>. You will get a compile error. Write the error as a comment.</li>
+      </ol>
+      <div class="expected-output">DB Host: localhost
+DB Port: 3306
+DB Name: school_db
+Connection: jdbc:mysql://localhost:3306/school_db</div>
+      <div class="error-output">// class MyConfig extends Config → ERROR: cannot inherit from final Config</div>
+      <div class="note-box">
+        <strong>Key learning:</strong> A <code>final</code> class cannot have subclasses. Java's <code>String</code> class is a real-world example — nobody can extend it. Use <code>final class</code> for utility or configuration classes that should never be modified through inheritance.
+      </div>
+    </div>
+  </div>
+
+  <!-- Exercise 07 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">07</span>
+      <span class="exercise-title">super() constructor chain</span>
+      <span class="tag tag-super">super</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Appliance</code> with:</p>
+      <ul>
+        <li>Fields: <code>String brand;</code> and <code>double price;</code></li>
+        <li>A constructor that assigns both and prints <code>"Appliance constructor: [brand]"</code></li>
+        <li>A method: <code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create a class named <code>WashingMachine</code> that <strong>extends</strong> <code>Appliance</code> with:</p>
+      <ul>
+        <li>Fields: <code>int loadCapacityKg;</code> and <code>boolean isFrontLoad;</code></li>
+        <li>A constructor that calls <code>super(brand, price)</code>, assigns remaining fields, and prints <code>"WashingMachine constructor: [loadCapacityKg]kg"</code></li>
+        <li><strong>Override</strong> <code>displayInfo()</code>: call <code>super.displayInfo()</code> first, then print washing machine-specific fields</li>
+      </ul>
+      <p>Create <code>TestSuperChain</code>. Create a <code>WashingMachine</code> and call <code>displayInfo()</code>.</p>
+      <div class="expected-output">Appliance constructor: Samsung
+WashingMachine constructor: 8kg
+
+--- Washing Machine Info ---
+Brand: Samsung
+Price: 24999.0
+Load capacity: 8kg
+Front load: true</div>
+    </div>
+  </div>
+
+  <!-- Exercise 08 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">08</span>
+      <span class="exercise-title">Combining super and final — BankAccount</span>
+      <span class="tag tag-super">super</span>
+      <span class="tag tag-final-var">final variable</span>
+      <span class="tag tag-final-method">final method</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>BankAccount</code> with:</p>
+      <ul>
+        <li><code>final String accountNumber;</code> — assigned once in constructor, never changes</li>
+        <li><code>String owner;</code></li>
+        <li><code>double balance;</code></li>
+        <li>A constructor that accepts all three. Assign <code>accountNumber</code> as final.</li>
+        <li><code>public final String getAccountNumber()</code> — cannot be overridden</li>
+        <li><code>public void deposit(double amount)</code> — adds to balance</li>
+        <li><code>public void displayInfo()</code></li>
+      </ul>
+      <p>Create a class named <code>SavingsAccount</code> that <strong>extends</strong> <code>BankAccount</code> with:</p>
+      <ul>
+        <li><code>double interestRate;</code></li>
+        <li>A constructor that calls <code>super(accountNumber, owner, balance)</code> and sets the interest rate.</li>
+        <li><code>public double calculateInterest()</code> — returns <code>balance * interestRate</code></li>
+        <li><strong>Override</strong> <code>displayInfo()</code>: call <code>super.displayInfo()</code>, then print the interest rate and calculated interest</li>
+      </ul>
+      <p>Create <code>TestSuperAndFinal</code>. Create a <code>SavingsAccount</code> and test it.</p>
+      <div class="expected-output">--- Savings Account ---
+Account: ACC-2024-001
+Owner: Maria Santos
+Balance: 50000.0
+Interest rate: 2.5%
+Annual interest: 1250.0
+
+Depositing 10000.0...
+Balance: 60000.0
+New annual interest: 1500.0</div>
+    </div>
+  </div>
+
+  <!-- Exercise 09 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">09</span>
+      <span class="exercise-title">final method + override attempt — Game</span>
+      <span class="tag tag-final-method">final method</span>
+      <span class="tag tag-override">Override</span>
+    </div>
+    <div class="exercise-body">
+      <p>Create a class named <code>Game</code> with:</p>
+      <ul>
+        <li>Fields: <code>String title;</code> and <code>int maxPlayers;</code></li>
+        <li>A constructor that accepts both.</li>
+        <li>A <strong>final</strong> method: <code>public final void showRules()</code> — prints <code>"All players must follow the official rules."</code></li>
+        <li>A regular method: <code>public void play()</code> — prints <code>"Playing [title]..."</code></li>
+      </ul>
+      <p>Create a class named <code>BoardGame</code> that <strong>extends</strong> <code>Game</code> with:</p>
+      <ul>
+        <li>Field: <code>int boardSize;</code></li>
+        <li>A constructor that calls <code>super(title, maxPlayers)</code> and sets boardSize.</li>
+        <li><strong>Override</strong> <code>play()</code>: call <code>super.play()</code>, then print <code>"Board size: [boardSize]x[boardSize]"</code></li>
+        <li><strong>Try</strong> to override <code>showRules()</code>. Write the error as a comment.</li>
+      </ul>
+      <p>Create <code>TestFinalOverride</code>. Create a <code>BoardGame</code>, call both methods.</p>
+      <div class="expected-output">--- Board Game ---
+Playing Chess...
+Board size: 8x8
+All players must follow the official rules.</div>
+      <div class="error-output">// Cannot override showRules() → ERROR: showRules() in BoardGame cannot override showRules() in Game; overridden method is final</div>
+    </div>
+  </div>
+
+  <!-- Exercise 10 -->
+  <div class="exercise">
+    <div class="exercise-header">
+      <span class="exercise-num">10</span>
+      <span class="exercise-title">Putting it all together — School system</span>
+      <span class="tag tag-mixed">Mixed</span>
+    </div>
+    <div class="exercise-body">
+      <p>This exercise combines <code>super</code>, <code>final</code>, constructors, method overriding, and inheritance.</p>
+      <p>Create a class named <code>SchoolMember</code> with:</p>
+      <ul>
+        <li><code>final int id;</code> — assigned once in constructor</li>
+        <li><code>String name;</code></li>
+        <li><code>int age;</code></li>
+        <li><code>static int nextId = 1000;</code></li>
+        <li>A constructor that auto-generates <code>id</code> (increment <code>nextId</code>), accepts name and age.</li>
+        <li><code>public final int getId()</code> — cannot be overridden</li>
+        <li><code>public void displayInfo()</code> — prints id, name, age</li>
+      </ul>
+      <p>Create a class named <code>Teacher</code> that <strong>extends</strong> <code>SchoolMember</code> with:</p>
+      <ul>
+        <li><code>String subject;</code></li>
+        <li><code>final String role = "Teacher";</code> — constant, always "Teacher"</li>
+        <li>A constructor that calls <code>super(name, age)</code> and sets subject.</li>
+        <li><strong>Override</strong> <code>displayInfo()</code>: call <code>super.displayInfo()</code>, then print role and subject</li>
+      </ul>
+      <p>Create a class named <code>Student</code> that <strong>extends</strong> <code>SchoolMember</code> with:</p>
+      <ul>
+        <li><code>String course;</code></li>
+        <li><code>double gpa;</code></li>
+        <li><code>final String role = "Student";</code></li>
+        <li>A constructor that calls <code>super(name, age)</code> and sets course and gpa.</li>
+        <li><strong>Override</strong> <code>displayInfo()</code>: call <code>super.displayInfo()</code>, then print role, course, and gpa</li>
+      </ul>
+      <p>Create <code>TestSchoolSystem</code>. Create 2 Teachers and 3 Students. Store them in a <code>SchoolMember[]</code> array and loop through to call <code>displayInfo()</code> on each.</p>
+      <div class="expected-output">========================================
+       SCHOOL MEMBER DIRECTORY
+========================================
+
+[ID: 1001] Maria Santos, Age: 35
+Role: Teacher
+Subject: Java Programming
+
+[ID: 1002] Carlos Garcia, Age: 40
+Role: Teacher
+Subject: Data Structures
+
+[ID: 1003] Alice Reyes, Age: 20
+Role: Student
+Course: BSIT
+GPA: 3.8
+
+[ID: 1004] Bob Cruz, Age: 21
+Role: Student
+Course: BSCS
+GPA: 3.2
+
+[ID: 1005] Charlie Tan, Age: 19
+Role: Student
+Course: BSIT
+GPA: 2.9
+
+========================================
+Total members: 5
+========================================</div>
+      <div class="note-box">
+        <strong>Key takeaway:</strong> This exercise demonstrates how <code>super()</code> passes data to the parent constructor, <code>super.displayInfo()</code> reuses parent logic, <code>final int id</code> protects the ID from modification, <code>final getId()</code> prevents subclasses from tampering with ID retrieval, and polymorphism lets you store different types in one array and call the correct overridden method on each.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUBMISSION -->
+  <div class="submission-box">
+    <h3>Submission instructions</h3>
+    <ol>
+      <li>Make sure all classes compile and run without errors (failing lines should be commented out with error messages).</li>
+      <li>Make sure every class is inside the <code>com.school.keywords</code> package.</li>
+      <li>Compress your entire <code>SuperAndFinal</code> project folder into a <strong>zip file</strong>.</li>
+      <li>
+        Rename the zip file using this format:
+        <br>
+        <span class="filename-format">EID_LabEight-School.zip</span>
+        <br>
+        Your <strong>EID</strong> is your Accenture email address <em>without</em> <code>@accenture.com</code>.
+        <br>
+        Example: if your email is <code>daniel.j.a.barrion@accenture.com</code>, your zip file should be named:
+        <br>
+        <span class="filename-format">daniel.j.a.barrion_LabEight-School.zip</span>
+      </li>
+      <li>Submit the zip file to your instructor.</li>
+    </ol>
+  </div>
+
+  <div class="warning-box">
+    <strong>Reminders:</strong>
+    <br>
+    &bull; Each class must have the correct package declaration: <code>package com.school.keywords;</code><br>
+    &bull; Class names must match exactly (case-sensitive).<br>
+    &bull; Comment out lines that cause compile errors and write the error message as a comment.
+  </div>
+
+  <div class="footer">
+    Java Coding Exercise &mdash; super &amp; final Keywords &mdash; Good luck!
+  </div>
+
+</div>
+</body>
+</html>
